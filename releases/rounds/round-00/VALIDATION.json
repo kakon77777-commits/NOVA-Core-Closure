@@ -1,0 +1,27 @@
+{
+  "round": "00",
+  "date": "2026-08-18",
+  "encoding": "UTF-8",
+  "canonical_math_delimiters": [
+    "$...$",
+    "$$...$$"
+  ],
+  "files": [
+    {
+      "file": "README.md",
+      "valid": true,
+      "issues": []
+    },
+    {
+      "file": "ROUND_00_BASIC_INTRODUCTION.md",
+      "valid": true,
+      "issues": []
+    },
+    {
+      "file": "SOURCE_BASIS.md",
+      "valid": true,
+      "issues": []
+    }
+  ],
+  "valid": true
+}
