@@ -1,0 +1,84 @@
+{
+  "acceptance": {
+    "deterministic_confidence": true,
+    "distinct_graph_hashes": true,
+    "human_selection": true,
+    "multi_candidate": true,
+    "no_auto_unique_selection": true,
+    "parent_linked_refinement": true,
+    "rejected_or_stale_selection": true,
+    "semantic_back_projection": true,
+    "source_identity_invariance": true,
+    "visible_ambiguity": true,
+    "visible_obligations": true
+  },
+  "back_projection": {
+    "bridge_confidence": 0.38,
+    "candidate_graph_hash": "sha256:9ebcc5dc135b74765137471587907148415f27a19aef1d16305a3a0da6d4f285",
+    "candidate_id": "sigmoid",
+    "correction_ids": [
+      "select-sigmoid-001"
+    ],
+    "diff_summary": {
+      "after_semantic_hash": null,
+      "before_semantic_hash": null,
+      "semantic_changed": true
+    },
+    "exact_reconstruction_claimed": false,
+    "fidelity": {
+      "correction_count": 1,
+      "dimension_preservation_ratio": 0.75,
+      "provenance_complete": true,
+      "relation_preservation_ratio": 1.0,
+      "traceable": true,
+      "unresolved_obligation_count": 1
+    },
+    "kind": "semantic_back_projection",
+    "preserved_dimensions": [
+      "operation_family",
+      "smoothness"
+    ],
+    "preserved_relations": [
+      "operation_family:prefers:smoothness"
+    ],
+    "request_hash": "sha256:eaa650b95691412b657d177d41706c47e4f80a72be417cb1e0cc9032f84b114d",
+    "schema_version": "0.1.0",
+    "source_tensor_hash": "sha256:67fd0ae59290c4c46c742f6d56317f6f7a18988a877e06d6714bda1a89915538",
+    "unresolved_dimensions": [
+      "bounded_output"
+    ],
+    "unresolved_relations": []
+  },
+  "base_project_semantic_hash": "sha256:f49ff7e56d9c88ec04d60317e6ae6440996a9bafbf26202da326011e8e50828a",
+  "bridge_confidence": {
+    "sigmoid": 0.38,
+    "tanh": 0.36000000000000004
+  },
+  "candidate_graph_hashes": {
+    "sigmoid": "sha256:9ebcc5dc135b74765137471587907148415f27a19aef1d16305a3a0da6d4f285",
+    "tanh": "sha256:4155df426da7dcc4de1a81940df9ef4f1a676d39bfac7711949a6e37db0f820d"
+  },
+  "candidate_set_hash": "sha256:8a54cab0b4edd7d6d4c132424288cccf208904eaa7114b9cc9a131be035b6c51",
+  "comparative_benchmark_status": "deferred",
+  "comparative_natural_language_superiority_claimed": false,
+  "derived_tensor_hash": "sha256:ff49d2c984362bfa23c7b41ddd37250c887a7d75d508dbaa4dc39548b372f1d9",
+  "gate": "G7",
+  "graph_schema_version": "0.1.0",
+  "round": 13,
+  "runtime_version": "0.13.0",
+  "selected_candidate_id": "sigmoid",
+  "source_tensor_hash": "sha256:67fd0ae59290c4c46c742f6d56317f6f7a18988a877e06d6714bda1a89915538",
+  "status": "SEALED",
+  "verification": {
+    "alternate_math_delimiter_hits": 0,
+    "hidden_control_hits": 0,
+    "invalid_json_files": 0,
+    "probable_secret_hits": 0,
+    "stale_selection_rejected": true,
+    "test_count": 383,
+    "tracked_files": 215,
+    "unicode_escape_hits": 0,
+    "utf8_failures": 0,
+    "warnings_as_errors_compile": true
+  }
+}

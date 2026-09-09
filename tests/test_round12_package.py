@@ -7,9 +7,13 @@ import nova_core
 from nova_core import SchemaHeader
 
 
+def version_tuple(value: str):
+    return tuple(int(x) for x in value.split("."))
+
+
 def test_round12_runtime_version_and_schema_compatibility():
-    assert nova_core.__version__ == "0.12.0"
-    assert SchemaHeader().nova_core_version == "0.12.0"
+    assert version_tuple(nova_core.__version__) >= (0, 12, 0)
+    assert SchemaHeader().nova_core_version == nova_core.__version__
     assert SchemaHeader().schema_version == "0.1.0"
 
 

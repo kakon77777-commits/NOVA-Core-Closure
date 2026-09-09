@@ -280,3 +280,36 @@ Round 12 adds:
 Recognition keeps explicit precompute, storage, and maintenance costs. The planner does not claim global optimality and does not alter Core semantics.
 
 **G6 is sealed. Next:** Round 13 begins G7 — ISQL high-dimensional semantic interface and ambiguity-preserving intent-to-candidate-graph conversion.
+
+## Round 13 — G7 ISQL High-Dimensional Semantic Interface
+
+**Implemented and sealed after the release gate.** NOVA now accepts a versioned high-dimensional `SemanticTensor` and can lower the same intent into multiple validated NOVA candidate graphs without pretending that ambiguity has disappeared.
+
+Round 13 adds:
+
+- deterministic `SemanticTensor` schema, codec, and semantic identity;
+- protocol / registry / decoder provenance contracts;
+- deterministic `SemanticBridgeTemplate` codecs;
+- multi-candidate ISQL → G4 bridge lowering;
+- explicit ambiguity and unresolved-obligation sets;
+- bridge-confidence decomposition without correctness-probability claims;
+- append-only `SemanticCorrection` and `SemanticResolution` evidence;
+- parent-linked semantic refinement;
+- stale/rejected candidate selection protection;
+- semantic back-projection and fidelity/traceability metrics;
+- Python API and `nova isql` CLI;
+- machine-readable G7 seal and verification matrix.
+
+The governing boundary is:
+
+$$
+\boxed{
+\text{High-Dimensional Intent}
+\neq
+\text{Unique Program Truth}
+}
+$$
+
+Every candidate remains an ordinary NOVA candidate and must pass the existing G4 validation boundary. G7 does not alter the canonical Graph schema.
+
+**G7 is sealed. Next:** Round 14 begins G8 — ProgramHandle, capability/context contracts, dry-run, approval policy, rollback, and end-to-end audit expansion.

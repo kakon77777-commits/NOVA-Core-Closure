@@ -188,3 +188,15 @@ class CompositionDepthError(CompositionError):
 
 class BrokenOperatorPropagationError(CompositionError):
     category = "BrokenOperatorPropagationError"
+
+
+class ISQLError(NovaError):
+    category = "ISQLError"
+
+
+class ISQLCodecError(ISQLError):
+    category = "ISQLCodecError"
+
+
+class ISQLResolutionError(ISQLError):
+    category = "ISQLResolutionError"

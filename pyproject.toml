@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nova-core-closure"
-version = "0.12.0"
-description = "NOVA Core Closure reference implementation — Round 11 G5 SOS / Cl-safe Integration"
+version = "0.13.0"
+description = "NOVA Core Closure reference implementation — Round 13 G7 ISQL High-Dimensional Semantic Interface"
 requires-python = ">=3.11"
 license = {text = "Proprietary / research preview"}
 authors = [{name = "Neo.K / EveMissLab"}]

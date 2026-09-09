@@ -8,10 +8,10 @@ from typing import Any
 
 import numpy as np
 
-from .api import audit_project_ai_build, commit_project_ai_build, diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_project_ai_build, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan, plan_project_paradigms, list_operator_descriptors, compose_operator_ids, lower_operator_ids
+from .api import audit_project_ai_build, commit_project_ai_build, diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_project_ai_build, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan, plan_project_paradigms, list_operator_descriptors, compose_operator_ids, lower_operator_ids, load_semantic_tensor, load_semantic_bridge_templates, load_semantic_correction, bridge_project_semantics, correct_semantic_tensor, resolve_project_semantics, back_project_project_semantics
 from .autodiff import DifferentiationRequest, gradient_symbol
 from .canonical import semantic_hash
-from .errors import AIBuildError, InteropError, NovaError, ProjectionEditError, ResourcePlanningError
+from .errors import AIBuildError, InteropError, ISQLResolutionError, NovaError, ProjectionEditError, ResourcePlanningError
 from .gradcheck import check_gradient
 from .interop import dlpack_device, from_dlpack, to_dlpack
 from .interactive import decode_node_graph_edits
@@ -24,6 +24,7 @@ from .codec import encode_project
 from .sos import CompositionContext, closure_hash
 from .paradigm import PlannerProfile, extract_strategy_regions, paradigm_by_code
 from .paradigm_planner import rank_candidates, validate_bonds, plan_hash
+from .isql import SemanticCorrection, encode_semantic_tensor, semantic_back_projection_record, semantic_candidate_set_record, semantic_resolution_record, semantic_tensor_hash, semantic_tensor_record
 
 
 def _runtime_value(value: Any) -> Any:
@@ -211,6 +212,26 @@ def _parser() -> argparse.ArgumentParser:
     bonds.add_argument("--reset-after", action="append", type=int, default=[])
     bonds.add_argument("--conversion-weight", type=float, default=1.0)
 
+    isql = sub.add_parser("isql")
+    isql_sub = isql.add_subparsers(dest="isql_command", required=True)
+    isql_inspect = isql_sub.add_parser("inspect")
+    isql_inspect.add_argument("tensor")
+    for name in ("bridge", "resolve", "back-project"):
+        cmd = isql_sub.add_parser(name)
+        cmd.add_argument("program")
+        cmd.add_argument("tensor")
+        cmd.add_argument("templates")
+        if name in {"resolve", "back-project"}:
+            cmd.add_argument("--candidate", required=True)
+        if name == "resolve":
+            cmd.add_argument("--actor", default="human")
+            cmd.add_argument("--correction-id", default="cli-selection")
+            cmd.add_argument("--rationale", default="")
+    isql_correct = isql_sub.add_parser("correct")
+    isql_correct.add_argument("tensor")
+    isql_correct.add_argument("correction")
+    isql_correct.add_argument("--output", required=True)
+
     interop = sub.add_parser("interop")
     interop_sub = interop.add_subparsers(dest="interop_command", required=True)
     for name in ("inspect", "roundtrip"):
@@ -276,6 +297,65 @@ def _write_candidate_project(input_path: Path, output_path: Path, candidate, *, 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
+        if args.command == "isql":
+            if args.isql_command == "inspect":
+                tensor = load_semantic_tensor(Path(args.tensor))
+                payload = semantic_tensor_record(tensor)
+                payload.update({"ok": True, "tensor_hash": semantic_tensor_hash(tensor)})
+                print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+                return 0
+            if args.isql_command == "correct":
+                input_path = Path(args.tensor)
+                output_path = Path(args.output)
+                if _same_path(input_path, output_path):
+                    raise ISQLResolutionError("isql correct refuses to overwrite the input semantic tensor")
+                tensor = load_semantic_tensor(input_path)
+                correction = load_semantic_correction(Path(args.correction))
+                derived = correct_semantic_tensor(tensor, correction)
+                output_path.write_text(encode_semantic_tensor(derived), encoding="utf-8")
+                print(json.dumps({
+                    "ok": True,
+                    "output": str(output_path),
+                    "source_tensor_hash": semantic_tensor_hash(tensor),
+                    "derived_tensor_hash": semantic_tensor_hash(derived),
+                    "parent_tensor_hash": derived.provenance.parent_tensor_hash,
+                    "correction_id": correction.correction_id,
+                }, ensure_ascii=False, sort_keys=True))
+                return 0
+            project_path = Path(args.program)
+            tensor_path = Path(args.tensor)
+            templates_path = Path(args.templates)
+            candidate_set = bridge_project_semantics(project_path, tensor_path, templates_path)
+            if args.isql_command == "bridge":
+                payload = semantic_candidate_set_record(candidate_set)
+                payload.update({
+                    "ok": True,
+                    "candidate_set_hash": candidate_set.candidate_set_hash,
+                    "selected_candidate_id": None,
+                })
+                print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+                return 0
+            if args.isql_command == "resolve":
+                tensor = load_semantic_tensor(tensor_path)
+                correction = SemanticCorrection(
+                    correction_id=args.correction_id,
+                    actor_id=args.actor,
+                    source_tensor_hash=semantic_tensor_hash(tensor),
+                    action="select_candidate",
+                    candidate_id=args.candidate,
+                    rationale=args.rationale,
+                )
+                resolution = resolve_project_semantics(project_path, tensor, templates_path, correction)
+                payload = semantic_resolution_record(resolution)
+                payload["ok"] = True
+                print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+                return 0
+            back = back_project_project_semantics(project_path, tensor_path, templates_path, args.candidate)
+            payload = semantic_back_projection_record(back)
+            payload["ok"] = True
+            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+            return 0
+
         if args.command == "paradigm":
             if args.paradigm_command == "validate-bonds":
                 tags = tuple(paradigm_by_code(code) for code in args.codes)

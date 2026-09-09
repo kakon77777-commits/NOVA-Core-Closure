@@ -22,6 +22,21 @@ from .formula_editing import preview_formula_edit as _preview_formula_edit
 from .notebook import Notebook, NotebookResult, run_notebook as _run_notebook
 from .paradigm import PlannerProfile
 from .paradigm_planner import ExecutionStrategyPlan, plan_graph as _plan_graph
+from .isql import (
+    SemanticBackProjection,
+    SemanticBridgeTemplate,
+    SemanticCandidateSet,
+    SemanticCorrection,
+    SemanticResolution,
+    SemanticTensor,
+    apply_semantic_correction,
+    back_project_semantics,
+    bridge_semantic_tensor,
+    decode_semantic_bridge_templates,
+    decode_semantic_correction,
+    decode_semantic_tensor,
+    resolve_semantic_candidate,
+)
 
 
 
@@ -46,6 +61,85 @@ def load_project(source: Project | str | bytes | Mapping[str, Any] | Path) -> Pr
         except OSError:
             pass
     return decode_project(source)
+
+
+def _load_jsonish(source: Any, *, decoder):
+    if isinstance(source, Path):
+        return decoder(source.read_text(encoding="utf-8"))
+    if isinstance(source, str):
+        stripped = source.lstrip()
+        if stripped.startswith("{") or stripped.startswith("["):
+            return decoder(source)
+        path = Path(source)
+        try:
+            if "\n" not in source and path.exists() and path.is_file():
+                return decoder(path.read_text(encoding="utf-8"))
+        except OSError:
+            pass
+    return decoder(source)
+
+
+def load_semantic_tensor(source: SemanticTensor | str | bytes | Mapping[str, Any] | Path) -> SemanticTensor:
+    if isinstance(source, SemanticTensor):
+        return source
+    return _load_jsonish(source, decoder=decode_semantic_tensor)
+
+
+def load_semantic_bridge_templates(
+    source: tuple[SemanticBridgeTemplate, ...] | list[SemanticBridgeTemplate] | str | bytes | Mapping[str, Any] | Path,
+) -> tuple[SemanticBridgeTemplate, ...]:
+    if isinstance(source, (tuple, list)) and all(isinstance(item, SemanticBridgeTemplate) for item in source):
+        return tuple(source)
+    return _load_jsonish(source, decoder=decode_semantic_bridge_templates)
+
+
+def load_semantic_correction(source: SemanticCorrection | str | bytes | Mapping[str, Any] | Path) -> SemanticCorrection:
+    if isinstance(source, SemanticCorrection):
+        return source
+    return _load_jsonish(source, decoder=decode_semantic_correction)
+
+
+def bridge_project_semantics(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    tensor: SemanticTensor | str | bytes | Mapping[str, Any] | Path,
+    templates: tuple[SemanticBridgeTemplate, ...] | list[SemanticBridgeTemplate] | str | bytes | Mapping[str, Any] | Path,
+) -> SemanticCandidateSet:
+    return bridge_semantic_tensor(
+        load_project(project),
+        load_semantic_tensor(tensor),
+        load_semantic_bridge_templates(templates),
+    )
+
+
+def correct_semantic_tensor(
+    tensor: SemanticTensor | str | bytes | Mapping[str, Any] | Path,
+    correction: SemanticCorrection | str | bytes | Mapping[str, Any] | Path,
+) -> SemanticTensor:
+    return apply_semantic_correction(load_semantic_tensor(tensor), load_semantic_correction(correction))
+
+
+def resolve_project_semantics(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    tensor: SemanticTensor | str | bytes | Mapping[str, Any] | Path,
+    templates: tuple[SemanticBridgeTemplate, ...] | list[SemanticBridgeTemplate] | str | bytes | Mapping[str, Any] | Path,
+    correction: SemanticCorrection | str | bytes | Mapping[str, Any] | Path,
+) -> SemanticResolution:
+    loaded_project = load_project(project)
+    candidate_set = bridge_project_semantics(loaded_project, tensor, templates)
+    return resolve_semantic_candidate(loaded_project, candidate_set, load_semantic_correction(correction))
+
+
+def back_project_project_semantics(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    tensor: SemanticTensor | str | bytes | Mapping[str, Any] | Path,
+    templates: tuple[SemanticBridgeTemplate, ...] | list[SemanticBridgeTemplate] | str | bytes | Mapping[str, Any] | Path,
+    candidate_id: str,
+    *,
+    corrections: tuple[SemanticCorrection, ...] | list[SemanticCorrection] = (),
+) -> SemanticBackProjection:
+    loaded_tensor = load_semantic_tensor(tensor)
+    candidate_set = bridge_project_semantics(project, loaded_tensor, templates)
+    return back_project_semantics(loaded_tensor, candidate_set, candidate_id, corrections=corrections)
 
 
 def _backend(name: str):
