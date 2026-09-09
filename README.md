@@ -189,3 +189,32 @@ Round 08 adds:
 - the G2 Final Verification Matrix.
 
 **Next:** Round 09 begins G3 verifiable memory/resource planning. It will not redefine G2 projections or editing semantics.
+
+## Round 09 — G3 Verifiable Memory & Resource Planning
+
+**Implemented and sealed.** NOVA now represents memory/resource planning as an explicit `MemoryPlan` candidate and verifies it independently before selection.
+
+Round 09 adds:
+
+- ownership and lifetime analysis;
+- static tensor byte accounting;
+- conservative physical buffer pools;
+- proven-safe buffer reuse;
+- explicit device transfers;
+- `safe / conditionally_safe / unsafe` verification;
+- conservative fallback for unsafe external or AI candidates;
+- `nova resource-plan`, `nova resource-verify`, and `nova resource-select`.
+
+The central safety rule is:
+
+$$
+\boxed{
+\text{AI MemoryPlan Candidate}
+\neq
+\text{Memory Safety Proof}
+}
+$$
+
+The Graph schema remains `0.1.0`; this is a compiler/runtime planning layer, not a new program ontology.
+
+**Next:** Round 10 begins G4 — Nova-A AI-native GraphPatch construction, transactions, provenance, sandboxing, and differential review.

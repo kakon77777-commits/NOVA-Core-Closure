@@ -1,0 +1,18 @@
+{
+  "x": {
+    "device": "cpu",
+    "dtype": "f32",
+    "kind": "tensor_type",
+    "layout": "dense",
+    "shape": {
+      "dims": [
+        {
+          "const": 4,
+          "kind": "affine_dim",
+          "terms": []
+        }
+      ],
+      "kind": "shape"
+    }
+  }
+}

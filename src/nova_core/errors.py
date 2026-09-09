@@ -126,6 +126,14 @@ class NotebookError(NovaError):
     category = "NotebookError"
 
 
+class ResourcePlanningError(NovaError):
+    category = "ResourcePlanningError"
+
+
+class ResourceVerificationError(NovaError):
+    category = "ResourceVerificationError"
+
+
 class InteropError(NovaError):
     category = "InteropError"
 

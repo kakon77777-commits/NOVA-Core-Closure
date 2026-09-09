@@ -8,16 +8,17 @@ from typing import Any
 
 import numpy as np
 
-from .api import diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project
+from .api import diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan
 from .autodiff import DifferentiationRequest, gradient_symbol
 from .canonical import semantic_hash
-from .errors import InteropError, NovaError, ProjectionEditError
+from .errors import InteropError, NovaError, ProjectionEditError, ResourcePlanningError
 from .gradcheck import check_gradient
 from .interop import dlpack_device, from_dlpack, to_dlpack
 from .interactive import decode_node_graph_edits
 from .notebook import decode_notebook
 from .projection import project_editable_text, project_formula, project_graph_view, project_text
 from .training import TrainingConfig
+from .resources import decode_memory_plan, decode_symbol_types, memory_plan_hash
 from .audit import project_audit_view
 from .codec import encode_project
 
@@ -149,12 +150,43 @@ def _parser() -> argparse.ArgumentParser:
     notebook_run.add_argument("--parameters")
     notebook_run.add_argument("--backend", choices=("interpreter", "numpy"), default="numpy")
 
+    resource_plan = sub.add_parser("resource-plan")
+    resource_plan.add_argument("program")
+    resource_plan.add_argument("--module", default="app")
+    resource_plan.add_argument("--graph", default="main")
+    resource_plan.add_argument("--types")
+    resource_plan.add_argument("--mode", choices=("optimized", "conservative"), default="optimized")
+
+    resource_verify = sub.add_parser("resource-verify")
+    resource_verify.add_argument("program")
+    resource_verify.add_argument("plan")
+    resource_verify.add_argument("--module", default="app")
+    resource_verify.add_argument("--graph", default="main")
+    resource_verify.add_argument("--types")
+
+    resource_select = sub.add_parser("resource-select")
+    resource_select.add_argument("program")
+    resource_select.add_argument("plan")
+    resource_select.add_argument("--module", default="app")
+    resource_select.add_argument("--graph", default="main")
+    resource_select.add_argument("--types")
+
     interop = sub.add_parser("interop")
     interop_sub = interop.add_subparsers(dest="interop_command", required=True)
     for name in ("inspect", "roundtrip"):
         cmd = interop_sub.add_parser(name)
         cmd.add_argument("npy_file")
     return parser
+
+
+
+def _load_symbol_types(path: str | None):
+    if not path:
+        return {}
+    raw = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ResourcePlanningError("symbol type file must contain a JSON object")
+    return decode_symbol_types(raw)
 
 
 def _load_npy(path: str) -> np.ndarray:
@@ -216,6 +248,30 @@ def main(argv: list[str] | None = None) -> int:
                 "equal": bool(np.array_equal(source, restored)),
             }
             print(json.dumps(payload, sort_keys=True))
+            return 0
+
+        if args.command == "resource-plan":
+            types = _load_symbol_types(args.types)
+            plan = plan_project_memory(
+                Path(args.program), args.module, args.graph, types, mode=args.mode
+            )
+            payload = {"ok": True, "plan_hash": memory_plan_hash(plan), "plan": plan.to_record()}
+            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+            return 0
+
+        if args.command in {"resource-verify", "resource-select"}:
+            types = _load_symbol_types(args.types)
+            plan = decode_memory_plan(Path(args.plan).read_text(encoding="utf-8"))
+            if args.command == "resource-verify":
+                report = verify_project_memory_plan(
+                    Path(args.program), args.module, args.graph, plan, types
+                )
+                print(json.dumps({"ok": report.status.value != "unsafe", "verification": report.to_record()}, ensure_ascii=False, sort_keys=True))
+                return 0
+            selection = select_project_memory_plan(
+                Path(args.program), args.module, args.graph, plan, types
+            )
+            print(json.dumps({"ok": True, "selection": selection.to_record(), "selected_plan": selection.selected.to_record()}, ensure_ascii=False, sort_keys=True))
             return 0
 
         if args.command == "diff":

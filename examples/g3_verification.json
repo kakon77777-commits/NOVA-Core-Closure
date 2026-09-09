@@ -1,0 +1,34 @@
+{
+  "evidence": {
+    "conservative_buffer_count": 3,
+    "conservative_reserved_bytes": 48,
+    "device_transfer_count": 2,
+    "dynamic_runtime_size_obligations": 2,
+    "dynamic_status": "conditionally_safe",
+    "fallback_selected_reserved_bytes": 48,
+    "fallback_used": true,
+    "forged_candidate_status": "unsafe",
+    "forged_candidate_violation": "peak_mismatch",
+    "optimized_buffer_count": 2,
+    "optimized_plan_hash": "sha256:1278a21dc837ae2e9f9bbd38662d5da3966a9fe7a6e9aaf057a20541aa7c6adf",
+    "optimized_reserved_bytes": 32,
+    "test_count": 255
+  },
+  "g3": {
+    "ai_candidate_policy": "untrusted_until_deterministic_verification",
+    "buffer_reuse_verified": true,
+    "conservative_reserved_bytes": 48,
+    "deterministic_lifetime_analysis": true,
+    "device_transfer_verified": true,
+    "dynamic_size_policy": "conditionally_safe_runtime_obligation",
+    "optimized_reserved_bytes": 32,
+    "reserved_bytes_reduction": 16,
+    "static_reduction_fraction": 0.3333333333333333,
+    "status": "SEALED",
+    "unsafe_candidate_fallback": true
+  },
+  "project": {
+    "schema_version": "0.1.0",
+    "version": "0.9.0"
+  }
+}

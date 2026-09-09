@@ -258,3 +258,54 @@ def run_project_notebook(
     loaded = load_project(project)
     return _run_notebook(loaded, notebook, external_inputs, backend=backend, parameters=parameters)
 
+
+
+def plan_project_memory(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+    symbol_types: Mapping[str, TensorType] | None = None,
+    *,
+    mode: str = "optimized",
+    proposer: str = "deterministic-planner",
+    confidence: float | None = None,
+):
+    from .resources import plan_memory
+
+    loaded = load_project(project)
+    graph, _ = _find_graph(loaded, module_id, graph_id)
+    return plan_memory(
+        graph,
+        symbol_types,
+        mode=mode,
+        proposer=proposer,
+        confidence=confidence,
+    )
+
+
+def verify_project_memory_plan(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+    plan,
+    symbol_types: Mapping[str, TensorType] | None = None,
+):
+    from .resource_verifier import verify_memory_plan
+
+    loaded = load_project(project)
+    graph, _ = _find_graph(loaded, module_id, graph_id)
+    return verify_memory_plan(graph, plan, symbol_types)
+
+
+def select_project_memory_plan(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+    candidate,
+    symbol_types: Mapping[str, TensorType] | None = None,
+):
+    from .resource_verifier import select_memory_plan
+
+    loaded = load_project(project)
+    graph, _ = _find_graph(loaded, module_id, graph_id)
+    return select_memory_plan(graph, candidate, symbol_types)
