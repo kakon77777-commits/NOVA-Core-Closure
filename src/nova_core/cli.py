@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-from .api import audit_project_ai_build, commit_project_ai_build, diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_project_ai_build, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan
+from .api import audit_project_ai_build, commit_project_ai_build, diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_project_ai_build, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan, list_operator_descriptors, compose_operator_ids, lower_operator_ids
 from .autodiff import DifferentiationRequest, gradient_symbol
 from .canonical import semantic_hash
 from .errors import AIBuildError, InteropError, NovaError, ProjectionEditError, ResourcePlanningError
@@ -21,6 +21,7 @@ from .training import TrainingConfig
 from .resources import decode_memory_plan, decode_symbol_types, memory_plan_hash
 from .audit import project_audit_view
 from .codec import encode_project
+from .sos import CompositionContext, closure_hash
 
 
 def _runtime_value(value: Any) -> Any:
@@ -184,6 +185,17 @@ def _parser() -> argparse.ArgumentParser:
     ai_commit.add_argument("request")
     ai_commit.add_argument("--output", required=True)
 
+    sos = sub.add_parser("sos")
+    sos_sub = sos.add_subparsers(dest="sos_command", required=True)
+    sos_sub.add_parser("list")
+    for name in ("validate", "compose", "lower"):
+        cmd = sos_sub.add_parser(name)
+        cmd.add_argument("operator_ids", nargs="+")
+        cmd.add_argument("--max-depth", type=int, default=32)
+        cmd.add_argument("--k-s", type=int, default=256)
+        if name == "lower":
+            cmd.add_argument("--output", required=True)
+
     interop = sub.add_parser("interop")
     interop_sub = interop.add_subparsers(dest="interop_command", required=True)
     for name in ("inspect", "roundtrip"):
@@ -240,6 +252,45 @@ def _write_candidate_project(input_path: Path, output_path: Path, candidate, *, 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
+        if args.command == "sos":
+            if args.sos_command == "list":
+                descriptors = list_operator_descriptors()
+                print(json.dumps({
+                    "ok": True,
+                    "operator_ids": [item.operator_id for item in descriptors],
+                    "descriptors": [item.to_record() for item in descriptors],
+                }, ensure_ascii=False, sort_keys=True))
+                return 0
+            context = CompositionContext(k_s=args.k_s, max_depth=args.max_depth)
+            closure = compose_operator_ids(tuple(args.operator_ids), context=context, strict=True)
+            if args.sos_command == "validate":
+                print(json.dumps({
+                    "ok": True,
+                    "status": "safe",
+                    "member_ids": list(closure.member_ids),
+                    "closure_hash": closure_hash(closure),
+                    "reports": [report.to_record() for report in closure.reports],
+                }, ensure_ascii=False, sort_keys=True))
+                return 0
+            if args.sos_command == "compose":
+                print(json.dumps({
+                    "ok": True,
+                    "member_ids": list(closure.member_ids),
+                    "closure_hash": closure_hash(closure),
+                    "closure": closure.to_record(),
+                }, ensure_ascii=False, sort_keys=True))
+                return 0
+            project = lower_operator_ids(tuple(args.operator_ids), context=context)
+            output_path = Path(args.output)
+            output_path.write_text(encode_project(project), encoding="utf-8")
+            print(json.dumps({
+                "ok": True,
+                "output": str(output_path),
+                "member_ids": list(closure.member_ids),
+                "closure_hash": closure_hash(closure),
+            }, ensure_ascii=False, sort_keys=True))
+            return 0
+
         if args.command in {"ai-build-preview", "ai-build-audit", "ai-build-commit"}:
             input_path = Path(args.program)
             request_path = Path(args.request)

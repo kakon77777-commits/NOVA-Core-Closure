@@ -250,3 +250,12 @@ $$
 Only a candidate that passes NOVA's deterministic validation boundary may be committed.
 
 **G4 is sealed. Next:** Round 11 begins G5 SOS / Cl-safe operator composition and failure isolation.
+
+
+## Round 11 — G5 SOS / Cl-safe Integration
+
+**Implemented and sealed.** NOVA now exposes a deterministic SOS operator-closure layer with Cl-safe Runtime Validation Protocol (RVP), typed failure, BrokenOperator isolation, bounded composition depth, and lowering of verified closures into ordinary NOVA graphs.
+
+The RVP core follows `C → G → S`; NOVA effect policy is checked afterward as an integration boundary. SOS does not replace NOVA type/shape/effect semantics.
+
+**G5 is sealed. Next:** Round 12 begins G6 — the explicit execution-paradigm planner.

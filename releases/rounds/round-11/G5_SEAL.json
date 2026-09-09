@@ -1,0 +1,36 @@
+{
+  "acceptance": {
+    "broken_operator_isolation": true,
+    "comp_collapse": true,
+    "depth_limit": true,
+    "effect_conflict": true,
+    "legal_composition": true,
+    "nova_lowering": true,
+    "projection_incoherence": true,
+    "sem_divergence": true
+  },
+  "evidence": {
+    "comp_error": "CompCollapseError",
+    "depth_limit_default": 32,
+    "effect_error": "EffectCompositionError",
+    "k_s_default": 256,
+    "legal_chain_hash": "sha256:556b98204c184edc8899073cbe57f8f5b7bbcbc83582572447755a2d6a3935b1",
+    "lowered_kinds": [
+      "Tanh",
+      "Relu"
+    ],
+    "lowering_max_abs_error": 0.0,
+    "projection_error": "GIncoherenceError",
+    "rvp_order": [
+      "C",
+      "G",
+      "S",
+      "EFFECT"
+    ],
+    "sem_error": "SemDivergenceError"
+  },
+  "gate": "G5",
+  "runtime_version": "0.11.0",
+  "schema_version": "0.1.0",
+  "status": "sealed"
+}

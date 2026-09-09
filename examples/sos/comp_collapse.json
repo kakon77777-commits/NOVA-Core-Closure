@@ -1,0 +1,97 @@
+{
+  "expected_error": "CompCollapseError",
+  "left": {
+    "composition_slot": {
+      "contexts": [
+        "left-only"
+      ],
+      "input_arity": 1,
+      "output_arity": 1
+    },
+    "effect_schema": [],
+    "nova_kind": "Left",
+    "operator_id": "left",
+    "projection_slot": {
+      "canonical_kind": "Left",
+      "connected": true,
+      "orientation": "forward",
+      "scale": 1.0
+    },
+    "semantic_slot": {
+      "states": [
+        "s"
+      ],
+      "transition": {
+        "s": "s"
+      }
+    },
+    "state_schema": [],
+    "version": "0.11.0"
+  },
+  "report": {
+    "checks": [
+      {
+        "evidence": {
+          "intersection": [],
+          "left_input_arity": 1,
+          "right_output_arity": 1
+        },
+        "message": "Comp intersection collapsed or arity is incompatible",
+        "passed": false,
+        "stage": "C"
+      }
+    ],
+    "comp_contexts": [],
+    "effect_schema": [],
+    "error": {
+      "category": "CompCollapseError",
+      "context": {
+        "intersection": [],
+        "left": "left",
+        "left_input_arity": 1,
+        "right": "right",
+        "right_output_arity": 1
+      },
+      "message": "Comp slot collapsed during composition",
+      "path": [],
+      "repair_candidates": [],
+      "source_nodes": [],
+      "violated_constraints": []
+    },
+    "left_id": "left",
+    "projection_slot": null,
+    "right_id": "right",
+    "semantic_iterations": 0,
+    "semantic_slot": null,
+    "status": "unsafe"
+  },
+  "right": {
+    "composition_slot": {
+      "contexts": [
+        "right-only"
+      ],
+      "input_arity": 1,
+      "output_arity": 1
+    },
+    "effect_schema": [],
+    "nova_kind": "Right",
+    "operator_id": "right",
+    "projection_slot": {
+      "canonical_kind": "Right",
+      "connected": true,
+      "orientation": "forward",
+      "scale": 1.0
+    },
+    "semantic_slot": {
+      "states": [
+        "s"
+      ],
+      "transition": {
+        "s": "s"
+      }
+    },
+    "state_schema": [],
+    "version": "0.11.0"
+  },
+  "scenario": "comp_collapse"
+}

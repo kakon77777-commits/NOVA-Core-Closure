@@ -156,3 +156,35 @@ class AISandboxError(AIBuildError):
 
 class AIBuildConflictError(AIBuildError):
     category = "AIBuildConflictError"
+
+
+class OperatorDescriptorError(NovaError):
+    category = "OperatorDescriptorError"
+
+
+class CompositionError(NovaError):
+    category = "CompositionError"
+
+
+class CompCollapseError(CompositionError):
+    category = "CompCollapseError"
+
+
+class GIncoherenceError(CompositionError):
+    category = "GIncoherenceError"
+
+
+class SemDivergenceError(CompositionError):
+    category = "SemDivergenceError"
+
+
+class EffectCompositionError(CompositionError):
+    category = "EffectCompositionError"
+
+
+class CompositionDepthError(CompositionError):
+    category = "CompositionDepthError"
+
+
+class BrokenOperatorPropagationError(CompositionError):
+    category = "BrokenOperatorPropagationError"

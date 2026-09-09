@@ -1,0 +1,154 @@
+{
+  "closure_hash": "sha256:556b98204c184edc8899073cbe57f8f5b7bbcbc83582572447755a2d6a3935b1",
+  "expected": "safe",
+  "operator_ids": [
+    "relu",
+    "tanh",
+    "negate"
+  ],
+  "reports": [
+    {
+      "checks": [
+        {
+          "evidence": {
+            "intersection": [
+              "differentiable",
+              "pure",
+              "tensor"
+            ],
+            "left_input_arity": 1,
+            "right_output_arity": 1
+          },
+          "message": "Comp intersection and arity are compatible",
+          "passed": true,
+          "stage": "C"
+        },
+        {
+          "evidence": {
+            "orientation": "forward",
+            "reason": null,
+            "scale": 1.0
+          },
+          "message": "minimum projection/GCI invariants hold",
+          "passed": true,
+          "stage": "G"
+        },
+        {
+          "evidence": {
+            "iterations": 1,
+            "k_s": 256,
+            "reason": null
+          },
+          "message": "semantic composition reached a bounded fixed point",
+          "passed": true,
+          "stage": "S"
+        },
+        {
+          "evidence": {
+            "effects": []
+          },
+          "message": "effect policy permits composition",
+          "passed": true,
+          "stage": "EFFECT"
+        }
+      ],
+      "comp_contexts": [
+        "differentiable",
+        "pure",
+        "tensor"
+      ],
+      "effect_schema": [],
+      "error": null,
+      "left_id": "relu",
+      "projection_slot": {
+        "canonical_kind": "Relu∘Tanh",
+        "connected": true,
+        "orientation": "forward",
+        "scale": 1.0
+      },
+      "right_id": "tanh",
+      "semantic_iterations": 1,
+      "semantic_slot": {
+        "states": [
+          "stable"
+        ],
+        "transition": {
+          "stable": "stable"
+        }
+      },
+      "status": "safe"
+    },
+    {
+      "checks": [
+        {
+          "evidence": {
+            "intersection": [
+              "differentiable",
+              "pure",
+              "tensor"
+            ],
+            "left_input_arity": 1,
+            "right_output_arity": 1
+          },
+          "message": "Comp intersection and arity are compatible",
+          "passed": true,
+          "stage": "C"
+        },
+        {
+          "evidence": {
+            "orientation": "forward",
+            "reason": null,
+            "scale": 1.0
+          },
+          "message": "minimum projection/GCI invariants hold",
+          "passed": true,
+          "stage": "G"
+        },
+        {
+          "evidence": {
+            "iterations": 1,
+            "k_s": 256,
+            "reason": null
+          },
+          "message": "semantic composition reached a bounded fixed point",
+          "passed": true,
+          "stage": "S"
+        },
+        {
+          "evidence": {
+            "effects": []
+          },
+          "message": "effect policy permits composition",
+          "passed": true,
+          "stage": "EFFECT"
+        }
+      ],
+      "comp_contexts": [
+        "differentiable",
+        "pure",
+        "tensor"
+      ],
+      "effect_schema": [],
+      "error": null,
+      "left_id": "closure:relu∘tanh",
+      "projection_slot": {
+        "canonical_kind": "Relu∘Tanh∘Negate",
+        "connected": true,
+        "orientation": "forward",
+        "scale": 1.0
+      },
+      "right_id": "negate",
+      "semantic_iterations": 1,
+      "semantic_slot": {
+        "states": [
+          "stable"
+        ],
+        "transition": {
+          "stable": "stable"
+        }
+      },
+      "status": "safe"
+    }
+  ],
+  "scenario": "legal_chain"
+}

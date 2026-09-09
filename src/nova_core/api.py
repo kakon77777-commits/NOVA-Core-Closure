@@ -353,3 +353,55 @@ def commit_project_ai_build(project, request):
     tx = AIBuildTransaction(loaded)
     candidate = tx.preview(loaded_request)
     return tx.commit(candidate)
+
+
+def list_operator_descriptors():
+    from .sos import basic_operator_registry
+
+    return basic_operator_registry().descriptors
+
+
+def compose_operator_ids(operator_ids, *, context=None, strict=True):
+    from .sos import basic_operator_registry, compose_chain
+
+    ids = tuple(str(value) for value in operator_ids)
+    registry = basic_operator_registry()
+    descriptors = tuple(registry.get(operator_id) for operator_id in ids)
+    return compose_chain(descriptors, context=context, strict=strict)
+
+
+def validate_operator_ids(operator_ids, *, context=None):
+    from .sos import BrokenOperator, closure_hash
+
+    result = compose_operator_ids(operator_ids, context=context, strict=False)
+    if isinstance(result, BrokenOperator):
+        error = result.report.error
+        to_dict = getattr(error, "to_dict", None) if error is not None else None
+        return {
+            "status": "unsafe",
+            "member_ids": list(result.member_ids),
+            "error": to_dict() if callable(to_dict) else None,
+            "reports": [result.report.to_record()],
+        }
+    return {
+        "status": "safe",
+        "member_ids": list(result.member_ids),
+        "closure_hash": closure_hash(result),
+        "reports": [report.to_record() for report in result.reports],
+    }
+
+
+def lower_operator_ids(operator_ids, *, context=None, module_id="app", graph_id="main", input_symbol="x", output_symbol="y"):
+    from .sos import BrokenOperator
+    from .sos_lowering import lower_closure_to_project
+
+    closure = compose_operator_ids(operator_ids, context=context, strict=True)
+    if isinstance(closure, BrokenOperator):
+        raise AssertionError("strict SOS composition returned BrokenOperator")
+    return lower_closure_to_project(
+        closure,
+        module_id=module_id,
+        graph_id=graph_id,
+        input_symbol=input_symbol,
+        output_symbol=output_symbol,
+    )

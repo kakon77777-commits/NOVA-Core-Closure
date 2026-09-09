@@ -1,0 +1,133 @@
+{
+  "expected_error": "SemDivergenceError",
+  "k_s": 8,
+  "left": {
+    "composition_slot": {
+      "contexts": [
+        "pure",
+        "tensor"
+      ],
+      "input_arity": 1,
+      "output_arity": 1
+    },
+    "effect_schema": [],
+    "nova_kind": "Stable",
+    "operator_id": "stable",
+    "projection_slot": {
+      "canonical_kind": "Stable",
+      "connected": true,
+      "orientation": "forward",
+      "scale": 1.0
+    },
+    "semantic_slot": {
+      "states": [
+        "a",
+        "b"
+      ],
+      "transition": {
+        "a": "a",
+        "b": "b"
+      }
+    },
+    "state_schema": [],
+    "version": "0.11.0"
+  },
+  "report": {
+    "checks": [
+      {
+        "evidence": {
+          "intersection": [
+            "pure",
+            "tensor"
+          ],
+          "left_input_arity": 1,
+          "right_output_arity": 1
+        },
+        "message": "Comp intersection and arity are compatible",
+        "passed": true,
+        "stage": "C"
+      },
+      {
+        "evidence": {
+          "orientation": "forward",
+          "reason": null,
+          "scale": 1.0
+        },
+        "message": "minimum projection/GCI invariants hold",
+        "passed": true,
+        "stage": "G"
+      },
+      {
+        "evidence": {
+          "iterations": 8,
+          "k_s": 8,
+          "reason": "fixed_point_not_reached"
+        },
+        "message": "semantic composition did not reach a bounded fixed point",
+        "passed": false,
+        "stage": "S"
+      }
+    ],
+    "comp_contexts": [
+      "pure",
+      "tensor"
+    ],
+    "effect_schema": [],
+    "error": {
+      "category": "SemDivergenceError",
+      "context": {
+        "iterations": 8,
+        "k_s": 8,
+        "reason": "fixed_point_not_reached"
+      },
+      "message": "semantic composition failed bounded RVP fixed-point validation",
+      "path": [],
+      "repair_candidates": [],
+      "source_nodes": [],
+      "violated_constraints": []
+    },
+    "left_id": "stable",
+    "projection_slot": {
+      "canonical_kind": "Stable∘Toggle",
+      "connected": true,
+      "orientation": "forward",
+      "scale": 1.0
+    },
+    "right_id": "toggle",
+    "semantic_iterations": 8,
+    "semantic_slot": null,
+    "status": "unsafe"
+  },
+  "right": {
+    "composition_slot": {
+      "contexts": [
+        "pure",
+        "tensor"
+      ],
+      "input_arity": 1,
+      "output_arity": 1
+    },
+    "effect_schema": [],
+    "nova_kind": "Toggle",
+    "operator_id": "toggle",
+    "projection_slot": {
+      "canonical_kind": "Toggle",
+      "connected": true,
+      "orientation": "forward",
+      "scale": 1.0
+    },
+    "semantic_slot": {
+      "states": [
+        "a",
+        "b"
+      ],
+      "transition": {
+        "a": "b",
+        "b": "a"
+      }
+    },
+    "state_schema": [],
+    "version": "0.11.0"
+  },
+  "scenario": "sem_divergence"
+}

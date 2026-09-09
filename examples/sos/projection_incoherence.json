@@ -1,0 +1,55 @@
+{
+  "expected_error": "GIncoherenceError",
+  "report": {
+    "checks": [
+      {
+        "evidence": {
+          "intersection": [
+            "pure",
+            "tensor"
+          ],
+          "left_input_arity": 1,
+          "right_output_arity": 1
+        },
+        "message": "Comp intersection and arity are compatible",
+        "passed": true,
+        "stage": "C"
+      },
+      {
+        "evidence": {
+          "left": "forward",
+          "reason": "orientation_inconsistency",
+          "right": "reverse"
+        },
+        "message": "projection/GCI invariant failed",
+        "passed": false,
+        "stage": "G"
+      }
+    ],
+    "comp_contexts": [
+      "pure",
+      "tensor"
+    ],
+    "effect_schema": [],
+    "error": {
+      "category": "GIncoherenceError",
+      "context": {
+        "left": "forward",
+        "reason": "orientation_inconsistency",
+        "right": "reverse"
+      },
+      "message": "projection/G slot is incoherent under composition",
+      "path": [],
+      "repair_candidates": [],
+      "source_nodes": [],
+      "violated_constraints": []
+    },
+    "left_id": "proj-left",
+    "projection_slot": null,
+    "right_id": "proj-bad",
+    "semantic_iterations": 0,
+    "semantic_slot": null,
+    "status": "unsafe"
+  },
+  "scenario": "projection_incoherence"
+}

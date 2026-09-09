@@ -12,10 +12,9 @@ def version_tuple(value: str):
 
 
 def test_round10_runtime_version_and_schema_compatibility():
-    assert nova_core.__version__ == "0.10.0"
-    assert SchemaHeader().nova_core_version == "0.10.0"
-    assert SchemaHeader().schema_version == "0.1.0"
     assert version_tuple(nova_core.__version__) >= (0, 10, 0)
+    assert SchemaHeader().nova_core_version == nova_core.__version__
+    assert SchemaHeader().schema_version == "0.1.0"
 
 
 def test_round10_g4_seal_artifacts_exist_and_are_machine_readable():
