@@ -1,0 +1,32 @@
+{
+  "version": "0.1",
+  "cells": [
+    {
+      "id": "c1",
+      "module_id": "app",
+      "graph_id": "add",
+      "bindings": {
+        "x": {
+          "kind": "external",
+          "name": "x"
+        },
+        "b": {
+          "kind": "external",
+          "name": "b"
+        }
+      }
+    },
+    {
+      "id": "c2",
+      "module_id": "app",
+      "graph_id": "relu",
+      "bindings": {
+        "y": {
+          "kind": "cell_output",
+          "cell_id": "c1",
+          "output": "y"
+        }
+      }
+    }
+  ]
+}

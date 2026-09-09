@@ -1,0 +1,35 @@
+{
+  "evidence": {
+    "base_project_file_unchanged": true,
+    "editable_record_roundtrip": true,
+    "formula_edit_candidate_hash": "sha256:b0de131ae63f910f8e5d29750f4fe01a468c44aeef24c747822f664ea39e8879",
+    "node_edit_base_hash": "sha256:59135573b38f30a34325168cf0f33bb1a200ce94dd8c5930e95dd5a088251799",
+    "node_edit_candidate_hash": "sha256:c67fc33ebf9173aaecac5e2db2c89c1ae4132bd028e6f9bd3d7f97a1d945fbf2",
+    "notebook_hash": "sha256:fa8c4b157f97bfe505e334f0043566a9b322ca5740fcc5aeda2e93c1f29fcfd0",
+    "notebook_last_output": {
+      "z": [
+        0.0,
+        2.5
+      ]
+    },
+    "notebook_last_output_digest": "sha256:774d3ae0698408ceec6c60d4673ca170df720b2011eef1d5eb145607e67a0689",
+    "test_count": 226
+  },
+  "g2": {
+    "error_audit_view": true,
+    "explicit_commit": true,
+    "formula_editing": "bounded-local",
+    "node_graph_editing": true,
+    "notebook": "graph-cell-prototype",
+    "projection_hash_invariance": true,
+    "record_hash_concurrency": true,
+    "status": "SEALED",
+    "structural_semantic_diff": true,
+    "structured_text_round_trip": "lossless"
+  },
+  "project": {
+    "name": "NOVA Core Closure",
+    "schema_version": "0.1.0",
+    "version": "0.8.0"
+  }
+}

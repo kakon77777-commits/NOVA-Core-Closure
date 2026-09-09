@@ -8,12 +8,14 @@ from typing import Any
 
 import numpy as np
 
-from .api import diff_project_graphs, find_graph, load_project, preview_structured_edit, run_project, run_project_gradient, train_project
+from .api import diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project
 from .autodiff import DifferentiationRequest, gradient_symbol
 from .canonical import semantic_hash
 from .errors import InteropError, NovaError, ProjectionEditError
 from .gradcheck import check_gradient
 from .interop import dlpack_device, from_dlpack, to_dlpack
+from .interactive import decode_node_graph_edits
+from .notebook import decode_notebook
 from .projection import project_editable_text, project_formula, project_graph_view, project_text
 from .training import TrainingConfig
 from .audit import project_audit_view
@@ -108,6 +110,45 @@ def _parser() -> argparse.ArgumentParser:
     commit.add_argument("--graph", default="main")
     commit.add_argument("--rationale", default="")
 
+    node_preview = sub.add_parser("node-edit-preview")
+    node_preview.add_argument("program")
+    node_preview.add_argument("--ops", required=True)
+    node_preview.add_argument("--module", default="app")
+    node_preview.add_argument("--graph", default="main")
+    node_preview.add_argument("--rationale", default="")
+
+    node_commit = sub.add_parser("node-edit-commit")
+    node_commit.add_argument("program")
+    node_commit.add_argument("--ops", required=True)
+    node_commit.add_argument("--output", required=True)
+    node_commit.add_argument("--module", default="app")
+    node_commit.add_argument("--graph", default="main")
+    node_commit.add_argument("--rationale", default="")
+
+    formula_preview = sub.add_parser("formula-edit-preview")
+    formula_preview.add_argument("program")
+    formula_preview.add_argument("--node", required=True)
+    formula_preview.add_argument("--formula", required=True)
+    formula_preview.add_argument("--module", default="app")
+    formula_preview.add_argument("--graph", default="main")
+    formula_preview.add_argument("--rationale", default="")
+
+    formula_commit = sub.add_parser("formula-edit-commit")
+    formula_commit.add_argument("program")
+    formula_commit.add_argument("--node", required=True)
+    formula_commit.add_argument("--formula", required=True)
+    formula_commit.add_argument("--output", required=True)
+    formula_commit.add_argument("--module", default="app")
+    formula_commit.add_argument("--graph", default="main")
+    formula_commit.add_argument("--rationale", default="")
+
+    notebook_run = sub.add_parser("notebook-run")
+    notebook_run.add_argument("program")
+    notebook_run.add_argument("--notebook", required=True)
+    notebook_run.add_argument("--inputs", required=True)
+    notebook_run.add_argument("--parameters")
+    notebook_run.add_argument("--backend", choices=("interpreter", "numpy"), default="numpy")
+
     interop = sub.add_parser("interop")
     interop_sub = interop.add_subparsers(dest="interop_command", required=True)
     for name in ("inspect", "roundtrip"):
@@ -127,6 +168,28 @@ def _load_npy(path: str) -> np.ndarray:
     if not isinstance(value, np.ndarray):
         raise InteropError("NumPy interop input is not an ndarray", context={"path": path})
     return value
+
+
+
+def _same_path(left: Path, right: Path) -> bool:
+    try:
+        return left.resolve() == right.resolve()
+    except OSError:
+        return left.absolute() == right.absolute()
+
+
+def _write_candidate_project(input_path: Path, output_path: Path, candidate, *, label: str) -> dict[str, Any]:
+    if _same_path(input_path, output_path):
+        raise ProjectionEditError(f"{label} refuses to overwrite the input project")
+    output_path.write_text(encode_project(candidate.candidate_project), encoding="utf-8")
+    return {
+        "ok": True,
+        "output": str(output_path),
+        "before_semantic_hash": candidate.before_semantic_hash,
+        "candidate_semantic_hash": candidate.candidate_semantic_hash,
+        "before_record_hash": candidate.before_record_hash,
+        "candidate_record_hash": candidate.candidate_record_hash,
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -158,6 +221,66 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "diff":
             diff = diff_project_graphs(Path(args.base_program), Path(args.target_program), args.module, args.graph)
             print(json.dumps(diff.to_dict(), ensure_ascii=False, sort_keys=True))
+            return 0
+
+        if args.command in {"node-edit-preview", "node-edit-commit"}:
+            input_path = Path(args.program)
+            raw_ops = json.loads(Path(args.ops).read_text(encoding="utf-8"))
+            operations = decode_node_graph_edits(raw_ops)
+            candidate = preview_node_graph_edit_project(
+                input_path, args.module, args.graph, operations, rationale=args.rationale
+            )
+            if args.command == "node-edit-preview":
+                print(json.dumps(project_audit_view(candidate), ensure_ascii=False, sort_keys=True))
+                return 0
+            payload = _write_candidate_project(input_path, Path(args.output), candidate, label="node-edit-commit")
+            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+            return 0
+
+        if args.command in {"formula-edit-preview", "formula-edit-commit"}:
+            input_path = Path(args.program)
+            candidate = preview_formula_edit_project(
+                input_path, args.module, args.graph, args.node, args.formula, rationale=args.rationale
+            )
+            if args.command == "formula-edit-preview":
+                print(json.dumps(project_audit_view(candidate), ensure_ascii=False, sort_keys=True))
+                return 0
+            payload = _write_candidate_project(input_path, Path(args.output), candidate, label="formula-edit-commit")
+            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+            return 0
+
+        if args.command == "notebook-run":
+            notebook_value = decode_notebook(Path(args.notebook).read_text(encoding="utf-8"))
+            raw_inputs = json.loads(Path(args.inputs).read_text(encoding="utf-8"))
+            raw_parameters = {}
+            if args.parameters:
+                raw_parameters = json.loads(Path(args.parameters).read_text(encoding="utf-8"))
+            result = run_project_notebook(
+                Path(args.program),
+                notebook_value,
+                {str(k): _runtime_value(v) for k, v in raw_inputs.items()},
+                parameters={str(k): _runtime_value(v) for k, v in raw_parameters.items()},
+                backend=args.backend,
+            )
+            payload = {
+                "ok": True,
+                "notebook_hash": result.notebook_hash,
+                "cells": [
+                    {
+                        "id": cell.cell_id,
+                        "module_id": cell.module_id,
+                        "graph_id": cell.graph_id,
+                        "graph_semantic_hash": cell.graph_semantic_hash,
+                        "dependency_cells": list(cell.dependency_cells),
+                        "backend": cell.backend,
+                        "outputs": _jsonable(dict(cell.outputs)),
+                        "output_digest": cell.output_digest,
+                        "output_summaries": {name: dict(summary) for name, summary in cell.output_summaries.items()},
+                    }
+                    for cell in result.cells
+                ],
+            }
+            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
             return 0
 
         if args.command in {"edit-preview", "edit-commit"}:

@@ -17,6 +17,9 @@ from .runtime import ExecutionResult
 from .training import TrainingConfig, TrainingResult, train_graph as _train_graph
 from .diff import GraphDiff, diff_graphs
 from .editing import ProjectionEditCandidate, interpret_structured_text_edit
+from .interactive import NodeGraphEdit, preview_node_graph_edit as _preview_node_graph_edit
+from .formula_editing import preview_formula_edit as _preview_formula_edit
+from .notebook import Notebook, NotebookResult, run_notebook as _run_notebook
 
 
 
@@ -212,3 +215,46 @@ def preview_structured_edit(
         rationale=rationale,
         provenance=provenance,
     )
+
+def preview_node_graph_edit_project(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+    operations: tuple[NodeGraphEdit, ...] | list[NodeGraphEdit],
+    *,
+    rationale: str = "",
+    provenance: Mapping[str, Any] | None = None,
+) -> ProjectionEditCandidate:
+    loaded = load_project(project)
+    return _preview_node_graph_edit(
+        loaded, module_id, graph_id, operations, rationale=rationale, provenance=provenance
+    )
+
+
+def preview_formula_edit_project(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+    node_id: str,
+    formula: str,
+    *,
+    rationale: str = "",
+    provenance: Mapping[str, Any] | None = None,
+) -> ProjectionEditCandidate:
+    loaded = load_project(project)
+    return _preview_formula_edit(
+        loaded, module_id, graph_id, node_id, formula, rationale=rationale, provenance=dict(provenance or {})
+    )
+
+
+def run_project_notebook(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    notebook: Notebook,
+    external_inputs: Mapping[str, Any],
+    *,
+    backend: str = "interpreter",
+    parameters: Mapping[str, Any] | None = None,
+) -> NotebookResult:
+    loaded = load_project(project)
+    return _run_notebook(loaded, notebook, external_inputs, backend=backend, parameters=parameters)
+

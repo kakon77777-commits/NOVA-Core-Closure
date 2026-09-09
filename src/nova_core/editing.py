@@ -104,29 +104,21 @@ class ProjectionEditCandidate:
         }
 
 
-def interpret_structured_text_edit(
+def build_projection_edit_candidate(
     project: Project,
     module_id: str,
     graph_id: str,
-    edited_text: str,
+    after_graph: Graph,
     *,
     rationale: str = "",
     provenance: Mapping[str, Any] | None = None,
 ) -> ProjectionEditCandidate:
     before_graph = _find_graph(project, module_id, graph_id)
-    try:
-        after_graph = parse_editable_text(edited_text)
-    except DecodeError as exc:
-        raise ProjectionEditError(
-            "editable structured text could not be parsed",
-            context={"cause": exc.to_dict()},
-        ) from exc
     if after_graph.id != graph_id:
         raise ProjectionEditError(
             "projection edit cannot change targeted graph identity",
             context={"expected_graph_id": graph_id, "received_graph_id": after_graph.id},
         )
-
     diff = diff_graphs(before_graph, after_graph)
     patch = _graph_patch_from_graphs(
         project,
@@ -146,6 +138,27 @@ def interpret_structured_text_edit(
         candidate_semantic_hash=result.after_hash,
         before_record_hash=result.before_record_hash or record_hash(project),
         candidate_record_hash=result.after_record_hash or record_hash(result.project),
+    )
+
+
+def interpret_structured_text_edit(
+    project: Project,
+    module_id: str,
+    graph_id: str,
+    edited_text: str,
+    *,
+    rationale: str = "",
+    provenance: Mapping[str, Any] | None = None,
+) -> ProjectionEditCandidate:
+    try:
+        after_graph = parse_editable_text(edited_text)
+    except DecodeError as exc:
+        raise ProjectionEditError(
+            "editable structured text could not be parsed",
+            context={"cause": exc.to_dict()},
+        ) from exc
+    return build_projection_edit_candidate(
+        project, module_id, graph_id, after_graph, rationale=rationale, provenance=provenance
     )
 
 

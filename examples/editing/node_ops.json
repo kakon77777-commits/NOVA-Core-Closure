@@ -1,0 +1,12 @@
+[
+  {
+    "op": "replace_node",
+    "node_id": "op",
+    "node": {
+      "id": "op",
+      "kind": "Subtract",
+      "inputs": ["x", "b"],
+      "outputs": ["y"]
+    }
+  }
+]

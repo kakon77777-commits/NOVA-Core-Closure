@@ -110,12 +110,21 @@ class ProjectionEditError(ProjectionError):
     category = "ProjectionEditError"
 
 
+class FormulaEditError(ProjectionEditError):
+    category = "FormulaEditError"
+
+
 class DiffError(NovaError):
     category = "DiffError"
 
 
 class TrainingError(NovaError):
     category = "TrainingError"
+
+
+class NotebookError(NovaError):
+    category = "NotebookError"
+
 
 class InteropError(NovaError):
     category = "InteropError"

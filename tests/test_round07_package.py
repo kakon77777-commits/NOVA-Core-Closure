@@ -6,10 +6,10 @@ import nova_core
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_round07_version_and_docs():
-    assert nova_core.__version__ == "0.7.0"
+def test_round07_compatibility_floor_and_docs():
+    assert tuple(map(int, nova_core.__version__.split("."))) >= (0, 7, 0)
     data = tomllib.loads((ROOT / "pyproject.toml").read_text(encoding="utf-8"))
-    assert data["project"]["version"] == "0.7.0"
+    assert data["project"]["version"] == nova_core.__version__
     assert (ROOT / "docs/rounds/ROUND_07_PROJECTION_INTEGRITY_STRUCTURED_EDITING.md").exists()
     assert (ROOT / "docs/G2_CORE_VERIFICATION_MATRIX.md").exists()
 

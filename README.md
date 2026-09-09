@@ -171,3 +171,21 @@ Current delivery mode is **local ZIP handoff**. GitHub publication remains pause
 ## Scope discipline
 
 NOVA Core Closure does not collapse EML, ISQL, SOS, Cl-safe, HSO, or other EveMissLab systems into the Core. Those systems connect through versioned interfaces after the Core semantic contract is stable.
+
+### Round 08 — Interactive Editing, Notebook Prototype & G2 Final Seal
+
+**Implemented. G2 is sealed.** NOVA now exposes typed interactive node-graph edit primitives, bounded local formula editing, and a graph-cell Notebook prototype while preserving the canonical graph as the sole source of truth.
+
+Round 08 adds:
+
+- node add/replace/remove, ordered input rewiring, node attribute editing, edge add/remove, and graph-output editing;
+- every interactive edit lowers to a validated Candidate GraphPatch before explicit commit;
+- bounded single-node formulas such as `Y = X - b`, `Y = X @ W`, and `Y = relu(X)` parsed without `eval`/`exec`;
+- typed rejection of nested or unsupported formula syntax and unsafe shape-family changes;
+- Notebook cells that reference canonical subgraphs rather than text snippets;
+- explicit external-input and prior-cell-output bindings;
+- deterministic per-cell graph hashes, dependency evidence, dtype/shape summaries, and output digests;
+- API/CLI preview, commit, and notebook execution surfaces;
+- the G2 Final Verification Matrix.
+
+**Next:** Round 09 begins G3 verifiable memory/resource planning. It will not redefine G2 projections or editing semantics.

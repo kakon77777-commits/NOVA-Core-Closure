@@ -7,8 +7,8 @@ from nova_core import decode_project, run_project, semantic_hash
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_round06_package_version():
-    assert nova_core.__version__ == "0.7.0"
+def test_package_version_has_not_regressed_below_round06():
+    assert tuple(map(int, nova_core.__version__.split("."))) >= (0, 7, 0)
 
 
 def test_readme_marks_round06_implemented_and_round07_next():
@@ -19,8 +19,10 @@ def test_readme_marks_round06_implemented_and_round07_next():
 
 
 def test_pyproject_version_dependency_and_cli_entrypoint():
+    import tomllib
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "0.7.0"' in text
+    data = tomllib.loads(text)
+    assert data["project"]["version"] == nova_core.__version__
     assert 'numpy>=' in text
     assert 'nova = "nova_core.cli:main"' in text
 
@@ -33,8 +35,8 @@ def test_executable_linear_example_runs():
     assert semantic_hash(project).startswith("sha256:")
 
 
-def test_default_schema_header_tracks_round06_core_version_without_schema_break():
-    assert nova_core.SchemaHeader().nova_core_version == "0.7.0"
+def test_default_schema_header_tracks_current_core_version_without_schema_break():
+    assert nova_core.SchemaHeader().nova_core_version == nova_core.__version__
     assert nova_core.SchemaHeader().schema_version == "0.1.0"
 
 
