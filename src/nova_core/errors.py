@@ -112,3 +112,14 @@ class DiffError(NovaError):
 
 class TrainingError(NovaError):
     category = "TrainingError"
+
+class InteropError(NovaError):
+    category = "InteropError"
+
+
+class DTypeInteropError(InteropError):
+    category = "DTypeInteropError"
+
+
+class DLPackInteropError(InteropError):
+    category = "DLPackInteropError"

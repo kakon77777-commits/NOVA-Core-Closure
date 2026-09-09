@@ -1,0 +1,149 @@
+{
+  "gate": "G1",
+  "release": "0.6.0",
+  "release_evidence": {
+    "dlpack_roundtrip": {
+      "device": [
+        1,
+        0
+      ],
+      "dtype": "float32",
+      "equal": true,
+      "shape": [
+        3,
+        4
+      ],
+      "shared_memory": true
+    },
+    "full_test_suite": {
+      "failed": 0,
+      "passed": 167
+    },
+    "model_closure": {
+      "attention": {
+        "final_loss": 0.0022048669470125237,
+        "initial_loss": 0.3036979145895332,
+        "parameter_state_hash": "sha256:3b0a8208a46af4b87a6ab29e0a209d52d20b670bb2c2b8f2e71eb1a888816789",
+        "ratio": 0.00726006614168734
+      },
+      "linear": {
+        "final_loss": 3.367186314304342e-05,
+        "initial_loss": 8.583333333333334,
+        "parameter_state_hash": "sha256:cf299d122f6dc6cfb5ffa63c1dfd1d46b316a529d9c0f6c724c2371a15b093f7",
+        "ratio": 3.922935511810883e-06
+      },
+      "mlp": {
+        "final_loss": 0.0009714653144726783,
+        "initial_loss": 2.9549560326371003,
+        "parameter_state_hash": "sha256:ae617cbab7e0103854a395bdd4023d2c1c271a8723b1830d8234b683ee540af3",
+        "ratio": 0.00032875795908398356
+      }
+    }
+  },
+  "requirements": {
+    "cli": {
+      "evidence": [
+        "tests/test_cli.py",
+        "tests/test_autodiff_api_cli.py",
+        "tests/test_training_api_cli.py",
+        "tests/test_interop_cli.py"
+      ],
+      "status": "pass"
+    },
+    "deterministic_identity": {
+      "evidence": [
+        "tests/test_canonical.py",
+        "tests/test_patch.py"
+      ],
+      "status": "pass"
+    },
+    "dlpack_interop": {
+      "evidence": [
+        "tests/test_dlpack_interop.py"
+      ],
+      "status": "pass"
+    },
+    "graph_schema": {
+      "evidence": [
+        "tests/test_model.py",
+        "tests/test_codec.py"
+      ],
+      "status": "pass"
+    },
+    "interpreter": {
+      "evidence": [
+        "tests/test_interpreter.py",
+        "tests/test_control_flow.py"
+      ],
+      "status": "pass"
+    },
+    "linear_regression": {
+      "evidence": [
+        "tests/test_model_closure_linear_mlp.py",
+        "examples/training_linear.json"
+      ],
+      "status": "pass"
+    },
+    "mlp": {
+      "evidence": [
+        "tests/test_model_closure_linear_mlp.py",
+        "examples/training_mlp.json"
+      ],
+      "status": "pass"
+    },
+    "numpy_cpu_backend": {
+      "evidence": [
+        "tests/test_numpy_backend.py"
+      ],
+      "status": "pass"
+    },
+    "projections": {
+      "evidence": [
+        "tests/test_projection.py"
+      ],
+      "status": "pass"
+    },
+    "python_numpy_interop": {
+      "evidence": [
+        "tests/test_interop.py",
+        "tests/test_interop_api.py"
+      ],
+      "status": "pass"
+    },
+    "reverse_mode_ad": {
+      "evidence": [
+        "tests/test_autodiff_transform.py",
+        "tests/test_autodiff_execution.py",
+        "tests/test_gradcheck.py"
+      ],
+      "status": "pass"
+    },
+    "small_attention": {
+      "evidence": [
+        "tests/test_model_closure_attention.py",
+        "examples/training_attention.json"
+      ],
+      "status": "pass"
+    },
+    "tensor_shape": {
+      "evidence": [
+        "tests/test_shape_types.py",
+        "tests/test_shape_solver.py",
+        "tests/test_shape_ops.py"
+      ],
+      "status": "pass"
+    },
+    "typed_failure": {
+      "evidence": [
+        "tests/test_shape_solver.py",
+        "tests/test_autodiff_domain.py",
+        "tests/test_training_loop.py",
+        "tests/test_interop.py",
+        "tests/test_dlpack_interop.py"
+      ],
+      "status": "pass"
+    }
+  },
+  "schema_version": "0.1.0",
+  "status": "sealed"
+}

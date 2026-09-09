@@ -7,20 +7,20 @@ from nova_core import decode_project, run_project, semantic_hash
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_round05_package_version():
-    assert nova_core.__version__ == "0.5.0"
+def test_round06_package_version():
+    assert nova_core.__version__ == "0.6.0"
 
 
-def test_readme_marks_round05_implemented_and_round06_next():
+def test_readme_marks_round06_implemented_and_round07_next():
     text = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "Round 05 — Model Closure & Training Validation" in text
+    assert "Round 06 — DLPack / Interop & G1 Final Seal" in text
     assert "**Implemented.**" in text
-    assert "Round 06" in text
+    assert "Round 07" in text
 
 
 def test_pyproject_version_dependency_and_cli_entrypoint():
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "0.5.0"' in text
+    assert 'version = "0.6.0"' in text
     assert 'numpy>=' in text
     assert 'nova = "nova_core.cli:main"' in text
 
@@ -33,8 +33,8 @@ def test_executable_linear_example_runs():
     assert semantic_hash(project).startswith("sha256:")
 
 
-def test_default_schema_header_tracks_round05_core_version_without_schema_break():
-    assert nova_core.SchemaHeader().nova_core_version == "0.5.0"
+def test_default_schema_header_tracks_round06_core_version_without_schema_break():
+    assert nova_core.SchemaHeader().nova_core_version == "0.6.0"
     assert nova_core.SchemaHeader().schema_version == "0.1.0"
 
 

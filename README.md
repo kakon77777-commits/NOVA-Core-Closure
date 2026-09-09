@@ -106,7 +106,13 @@ Round 05 closes the original G1 three-model exit condition with:
 
 ### Round 06 — DLPack / Interop & G1 Final Seal
 
-**Next.** Complete the remaining G1 interoperability surface, validate Python/DLPack exchange, and issue a final G1 verification matrix before moving to G2 projection/editing work.
+**Implemented.** Python/NumPy runtime exchange, explicit dtype/shape/device contracts, DLPack provider and raw-capsule import/export, verified CPU zero-copy round-trip, typed interop failures, API/CLI diagnostics, and the final G1 verification matrix.
+
+**G1 is now sealed.** The original executable-core requirements have a reference implementation, tests, examples, and a versioned schema.
+
+### Round 07 — G2 Projection & Editing
+
+**Next.** Enter G2: projection consistency, structured editing, structural diff, error views, and semantic-hash-preserving projection workflows.
 
 ## Quick start
 
@@ -116,6 +122,9 @@ nova check examples/differentiable_linear.json
 nova run examples/differentiable_linear.json --module app --graph main --inputs examples/differentiable_inputs.json --parameters examples/differentiable_parameters.json --backend numpy
 nova grad examples/differentiable_linear.json --module app --graph main --target loss --wrt W --wrt b --inputs examples/differentiable_inputs.json --parameters examples/differentiable_parameters.json --backend numpy --check
 nova train examples/training_linear.json --module app --graph main --target loss --wrt W --wrt b --inputs examples/training_linear_inputs.json --parameters examples/training_linear_parameters.json --steps 60 --learning-rate 0.2 --backend numpy
+# DLPack diagnostics operate on NumPy .npy runtime artifacts:
+# nova interop inspect tensor.npy
+# nova interop roundtrip tensor.npy
 ```
 
 ## Identity invariant

@@ -10,6 +10,8 @@ from .backends import NumPyBackend
 from .codec import decode_project
 from .errors import ValidationError
 from .interpreter import Interpreter
+from .interop import from_dlpack as _interop_from_dlpack, to_dlpack as _interop_to_dlpack, to_numpy as _interop_to_numpy
+from .types import TensorType
 from .model import Graph, Project
 from .runtime import ExecutionResult
 from .training import TrainingConfig, TrainingResult, train_graph as _train_graph
@@ -163,3 +165,15 @@ def train_project(
     loaded = load_project(project)
     graph, _ = _find_graph(loaded, module_id, graph_id)
     return _train_graph(graph, inputs, initial_parameters, config)
+
+
+def interop_to_numpy(value: Any, expected: TensorType | None = None, *, dtype_policy: str = "safe", copy: bool = False):
+    return _interop_to_numpy(value, expected=expected, dtype_policy=dtype_policy, copy=copy)
+
+
+def interop_to_dlpack(value: Any):
+    return _interop_to_dlpack(value)
+
+
+def interop_from_dlpack(value: Any, expected: TensorType | None = None):
+    return _interop_from_dlpack(value, expected=expected)

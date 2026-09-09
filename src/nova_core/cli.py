@@ -11,8 +11,9 @@ import numpy as np
 from .api import find_graph, load_project, run_project, run_project_gradient, train_project
 from .autodiff import DifferentiationRequest, gradient_symbol
 from .canonical import semantic_hash
-from .errors import NovaError
+from .errors import InteropError, NovaError
 from .gradcheck import check_gradient
+from .interop import dlpack_device, from_dlpack, to_dlpack
 from .projection import project_formula, project_text
 from .training import TrainingConfig
 
@@ -82,12 +83,54 @@ def _parser() -> argparse.ArgumentParser:
     train.add_argument("--steps", type=int, required=True)
     train.add_argument("--learning-rate", type=float, required=True)
     train.add_argument("--backend", choices=("interpreter", "numpy"), default="numpy")
+
+    interop = sub.add_parser("interop")
+    interop_sub = interop.add_subparsers(dest="interop_command", required=True)
+    for name in ("inspect", "roundtrip"):
+        cmd = interop_sub.add_parser(name)
+        cmd.add_argument("npy_file")
     return parser
+
+
+def _load_npy(path: str) -> np.ndarray:
+    try:
+        value = np.load(Path(path), allow_pickle=False)
+    except Exception as exc:
+        raise InteropError(
+            "failed to load NumPy .npy interop input",
+            context={"path": path, "error": type(exc).__name__},
+        ) from exc
+    if not isinstance(value, np.ndarray):
+        raise InteropError("NumPy interop input is not an ndarray", context={"path": path})
+    return value
 
 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
+        if args.command == "interop":
+            source = _load_npy(args.npy_file)
+            if args.interop_command == "inspect":
+                payload = {
+                    "ok": True,
+                    "dtype": str(source.dtype),
+                    "shape": list(source.shape),
+                    "device": list(dlpack_device(source)),
+                }
+                print(json.dumps(payload, sort_keys=True))
+                return 0
+            capsule = to_dlpack(source)
+            restored = from_dlpack(capsule)
+            payload = {
+                "ok": True,
+                "dtype": str(restored.dtype),
+                "shape": list(restored.shape),
+                "shared_memory": bool(np.shares_memory(source, restored)),
+                "equal": bool(np.array_equal(source, restored)),
+            }
+            print(json.dumps(payload, sort_keys=True))
+            return 0
+
         project = load_project(Path(args.program))
         if args.command == "check":
             print(json.dumps({"ok": True, "semantic_hash": semantic_hash(project)}, sort_keys=True))
