@@ -6,6 +6,8 @@ from typing import Any, Iterable, Mapping
 import re
 
 from .errors import ValidationError
+from .shape import Shape
+from .types import TensorType
 
 _VERSION_RE = re.compile(r"^\d+\.\d+\.\d+$")
 
@@ -30,7 +32,7 @@ def _tuple_str(value: Iterable[str] | None) -> tuple[str, ...]:
 
 @dataclass(frozen=True)
 class SchemaHeader:
-    nova_core_version: str = "0.1.0"
+    nova_core_version: str = "0.2.0"
     schema_version: str = "0.1.0"
     feature_flags: tuple[str, ...] = ()
     migration_history: tuple[str, ...] = ()
@@ -80,6 +82,16 @@ class Node:
         object.__setattr__(self, "effect_type", _freeze(self.effect_type))
         object.__setattr__(self, "differentiation_type", _freeze(self.differentiation_type))
         object.__setattr__(self, "source_projection", _freeze(self.source_projection))
+        if isinstance(self.value_type, TensorType) and isinstance(self.shape_type, Shape):
+            if self.value_type.shape != self.shape_type:
+                raise ValidationError(
+                    "tensor value_type shape and shape_type disagree",
+                    source_nodes=(self.id,),
+                    context={
+                        "value_type_shape": self.value_type.shape.to_record(),
+                        "shape_type": self.shape_type.to_record(),
+                    },
+                )
 
 
 @dataclass(frozen=True)

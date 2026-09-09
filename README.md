@@ -104,18 +104,41 @@ Projection/provenance metadata can change without changing $H_{\mathrm{sem}}$, w
 
 ### Round 02 — Tensor / Shape Semantic Kernel
 
-**Next.** Round 02 will add the first native tensor semantics:
+**Implemented.** Round 02 adds the first native tensor semantics on top of the canonical graph:
 
-- scalar / tensor value types;
-- symbolic dimension expressions;
-- shape equality and obligations;
-- broadcasting;
-- contraction / `MatMul` shape rules;
-- reshape / transpose;
-- explicit unknown-shape handling;
-- a minimal decidable constraint subset.
+- immutable `DimExpr`, `Shape`, and `TensorType`;
+- normalized integer-affine symbolic dimensions;
+- bounded deterministic equality solving;
+- explicit `PROVEN` / `DISPROVEN` / `UNKNOWN` proof status;
+- `ShapeObligation` for unresolved relations instead of silent compatibility;
+- concrete and symbolic broadcasting;
+- elementwise shape inference;
+- batched `MatMul` contraction rules;
+- general tensor contraction;
+- reshape element-count validation / obligation;
+- transpose permutation validation;
+- canonical JSON and semantic-hash integration for tensor types;
+- typed JSON decode/round-trip with forward-compatible tensor-type extensions.
 
-Round 02 will not yet add the interpreter or reverse-mode AD; those remain later closure rounds.
+The solver deliberately implements a bounded subset rather than pretending to be a complete theorem prover:
+
+$$
+\boxed{
+\text{Affine integer equality}
++
+\text{symbol binding}
++
+\text{symbol alias}
++
+\text{single-unknown integral solving}
+}
+$$
+
+Anything outside that proven subset remains an explicit obligation.
+
+### Round 03 — Executable Closure
+
+**Next.** Round 03 will begin executable semantics: pure tensor values/operations, reference interpreter, CPU/NumPy execution, and the first end-to-end `Y = XW + b` graph. Reverse-mode AD remains a subsequent closure checkpoint unless the executable kernel is stable enough to integrate it without widening the core prematurely.
 
 ## GraphPatch boundary
 
@@ -186,15 +209,11 @@ project = Project(
 print(semantic_hash(project))
 ```
 
-## Repository release rule
+## Round artifact rule
 
-Each completed development round is packaged as a ZIP artifact and committed to this repository before the round is reported complete.
+Each completed development round is packaged as a self-contained ZIP after the full verification gate.
 
-```text
-releases/rounds/
-```
-
-The chat-side downloadable ZIP and repository ZIP represent the same completed round.
+Current delivery mode is **local ZIP handoff**. GitHub publication is paused until explicitly resumed; local artifact correctness does not depend on remote publication.
 
 ## Scope discipline
 

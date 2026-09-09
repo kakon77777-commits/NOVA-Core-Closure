@@ -72,3 +72,7 @@ class DecodeError(NovaError):
 
 class MigrationError(NovaError):
     category = "MigrationError"
+
+
+class ShapeError(NovaError):
+    category = "ShapeError"

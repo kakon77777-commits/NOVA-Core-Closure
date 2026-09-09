@@ -7,6 +7,8 @@ from typing import Any, Callable
 from .canonical import canonical_json
 from .errors import DecodeError
 from .model import Edge, Graph, Module, Node, Project, SchemaHeader
+from .shape import Shape
+from .types import TensorType
 
 
 def _split(data: Mapping[str, Any], known: set[str]) -> tuple[dict[str, Any], dict[str, Any]]:
@@ -30,12 +32,27 @@ def decode_header(value: Any) -> SchemaHeader:
     return SchemaHeader(extensions=ext, **body)
 
 
+
+def _decode_semantic_value(value: Any) -> Any:
+    if isinstance(value, Mapping):
+        kind = value.get("kind")
+        if kind == "tensor_type":
+            return TensorType.from_record(value)
+        if kind == "shape":
+            return Shape.from_record(value)
+    return value
+
+
 def decode_node(value: Any) -> Node:
     data = _mapping(value, "node")
     known = {"id", "kind", "inputs", "outputs", "value_type", "shape_type", "effect_type", "differentiation_type", "source_projection", "constraints", "attributes", "provenance", "extensions"}
     body, unknown = _split(data, known)
     ext = dict(body.pop("extensions", {}) or {})
     ext.update(unknown)
+    if "value_type" in body:
+        body["value_type"] = _decode_semantic_value(body["value_type"])
+    if "shape_type" in body:
+        body["shape_type"] = _decode_semantic_value(body["shape_type"])
     try:
         return Node(extensions=ext, **body)
     except TypeError as exc:

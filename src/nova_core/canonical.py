@@ -9,6 +9,9 @@ from .model import Edge, Graph, Module, Node, Project, SchemaHeader
 
 
 def _thaw(value: Any) -> Any:
+    to_record = getattr(value, "to_record", None)
+    if callable(to_record):
+        return _thaw(to_record())
     if isinstance(value, Mapping):
         return {str(k): _thaw(v) for k, v in value.items()}
     if isinstance(value, tuple):

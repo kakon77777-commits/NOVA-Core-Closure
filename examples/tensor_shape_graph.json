@@ -1,0 +1,47 @@
+{
+  "header": {
+    "nova_core_version": "0.2.0",
+    "schema_version": "0.1.0",
+    "feature_flags": ["graph-kernel", "tensor-shape-kernel"]
+  },
+  "modules": [
+    {
+      "id": "tensor_demo",
+      "graphs": [
+        {
+          "id": "identity_tensor",
+          "inputs": ["x"],
+          "outputs": ["y"],
+          "nodes": [
+            {
+              "id": "identity_1",
+              "kind": "Identity",
+              "inputs": ["x"],
+              "outputs": ["y"],
+              "value_type": {
+                "kind": "tensor_type",
+                "dtype": "f32",
+                "shape": {
+                  "kind": "shape",
+                  "dims": [
+                    {"kind": "affine_dim", "const": 0, "terms": [["B", 1]]},
+                    {"kind": "affine_dim", "const": 128, "terms": []}
+                  ]
+                },
+                "layout": "row_major",
+                "device": "cpu"
+              },
+              "shape_type": {
+                "kind": "shape",
+                "dims": [
+                  {"kind": "affine_dim", "const": 0, "terms": [["B", 1]]},
+                  {"kind": "affine_dim", "const": 128, "terms": []}
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
