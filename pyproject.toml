@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nova-core-closure"
+version = "0.1.0"
+description = "NOVA Core Closure reference implementation — Round 01 Canonical Graph Kernel"
+requires-python = ">=3.11"
+license = {text = "Proprietary / research preview"}
+authors = [{name = "Neo.K / EveMissLab"}]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+addopts = "-q"

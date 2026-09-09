@@ -1,6 +1,6 @@
 # NOVA Core Closure
 
-**NOVA Core Closure** is the implementation project for the executable core of NOVA: a structure-first, tensor-native, differentiable, AI-assisted programming language architecture.
+**NOVA Core Closure** is the reference implementation project for the executable core of NOVA: a structure-first, tensor-native, differentiable, AI-assisted programming language architecture.
 
 NOVA does **not** treat source text as the authoritative program object. The canonical program is a typed structural graph; text, mathematical notation, graph views, documentation, debugging views, and AI-facing patches are projections of that same program object.
 
@@ -41,9 +41,7 @@ $$
 
 Text remains important for exchange, Git diff, CLI, accessibility, review, and long-term preservation. It is simply no longer the only authoritative container of program identity.
 
-## NOVA Core
-
-The frozen core model is:
+## Frozen NOVA Core model
 
 $$
 \boxed{
@@ -71,55 +69,69 @@ where:
 - $\mathcal D$ — language-level automatic differentiation;
 - $\mathcal R$ — backend implementations.
 
-## Core Closure 0.1
+## Development status
 
-The first implementation milestone is intentionally small and complete.
+### Round 00 — Basic Introduction
 
-It targets:
+Repository bootstrap, recovered source basis, and Core Closure scope.
 
-- canonical Project / Module / Graph / Node / Edge schemas;
-- deterministic serialization and semantic hashing;
-- scalar and tensor values;
-- symbolic shape constraints;
-- broadcasting, contraction, reshape, transpose, elementwise operations and matrix multiplication;
-- pure functions, `if`, and bounded loops;
-- a reference interpreter;
-- a CPU / NumPy reference backend;
-- reverse-mode automatic differentiation;
-- structured text and formula projections;
-- CLI and Python interoperability;
-- GraphPatch transactions with validation, provenance, rollback, and tests.
+### Round 01 — Canonical Graph Kernel
 
-The first executable validation cases are:
+**Implemented.** Round 01 establishes the first executable authoritative NOVA object model:
 
-1. linear regression;
-2. a small MLP;
-3. a small attention model.
+- immutable `SchemaHeader`, `Project`, `Module`, `Graph`, `Node`, and `Edge` objects;
+- deterministic UTF-8 canonical JSON serialization;
+- semantic hashing independent of semantically irrelevant insertion order;
+- semantic hash separation from provenance / migration history;
+- structural validation with typed `NovaError` / `ValidationError` objects;
+- forward-compatible unknown-field preservation through `extensions`;
+- JSON decode → canonicalize → encode round-trip;
+- transactional `GraphPatch` with base-hash conflict detection;
+- candidate validation before working-state mutation;
+- rollback to the exact base semantic hash.
 
-## AI-native does not mean AI-trusted
+The key identity rule is now executable:
 
-NOVA allows AI to construct and modify the program structure directly:
+$$
+\boxed{
+H_{\mathrm{sem}}(G)
+=
+\operatorname{SHA256}(\operatorname{Canon}_{\mathrm{sem}}(G))
+}
+$$
+
+Projection/provenance metadata can change without changing $H_{\mathrm{sem}}$, while executable structural changes do change it.
+
+### Round 02 — Tensor / Shape Semantic Kernel
+
+**Next.** Round 02 will add the first native tensor semantics:
+
+- scalar / tensor value types;
+- symbolic dimension expressions;
+- shape equality and obligations;
+- broadcasting;
+- contraction / `MatMul` shape rules;
+- reshape / transpose;
+- explicit unknown-shape handling;
+- a minimal decidable constraint subset.
+
+Round 02 will not yet add the interpreter or reverse-mode AD; those remain later closure rounds.
+
+## GraphPatch boundary
+
+AI-native NOVA does not mean AI-trusted NOVA.
 
 $$
 \text{Intent}
 \rightarrow
-\text{Candidate Graph}
+\text{Candidate GraphPatch}
 \rightarrow
-\text{Constraint Validation}
+\text{Deterministic Validation}
 \rightarrow
 G^\ast.
 $$
 
-AI may propose:
-
-- graph patches;
-- type and shape constraints;
-- differentiation requests;
-- resource plans;
-- backend candidates;
-- proof obligations and tests.
-
-But AI output is untrusted input until it passes deterministic validation.
+A patch may contain provenance, proof obligations, tests, and rationale, but it can update the candidate graph only after its base semantic hash matches and the resulting project validates.
 
 $$
 \boxed{
@@ -129,40 +141,61 @@ $$
 }
 $$
 
-## What Core Closure 0.1 is not
+## Quick reference
 
-This milestone does **not** attempt to finish:
+```python
+from nova_core import (
+    Graph,
+    GraphPatch,
+    GraphTransaction,
+    Module,
+    Node,
+    Project,
+    SchemaHeader,
+    semantic_hash,
+)
 
-- a full projectional IDE;
-- deep GPU optimization;
-- distributed execution;
-- the complete effect system;
-- the full MSSP-AISMBI memory planner;
-- complete EML / ISQL / SOS / Cl-safe integration;
-- the sixteen-paradigm planner;
-- minimal-symbol control;
-- unrestricted autonomous deployment.
+project = Project(
+    header=SchemaHeader(
+        nova_core_version="0.1.0",
+        schema_version="0.1.0",
+        feature_flags=("graph-kernel",),
+    ),
+    modules=(
+        Module(
+            id="app",
+            graphs=(
+                Graph(
+                    id="main",
+                    inputs=("x",),
+                    outputs=("y",),
+                    nodes=(
+                        Node(
+                            id="identity_1",
+                            kind="Identity",
+                            inputs=("x",),
+                            outputs=("y",),
+                        ),
+                    ),
+                ),
+            ),
+        ),
+    ),
+)
 
-Those systems connect through versioned interfaces after the core executable semantics are stable.
+print(semantic_hash(project))
+```
 
-## Repository rule
+## Repository release rule
 
 Each completed development round is packaged as a ZIP artifact and committed to this repository before the round is reported complete.
-
-Round artifacts are stored under:
 
 ```text
 releases/rounds/
 ```
 
-The chat-side downloadable ZIP and the repository ZIP should represent the same completed round.
+The chat-side downloadable ZIP and repository ZIP represent the same completed round.
 
-## Current status
+## Scope discipline
 
-```text
-Round 00
-Recover → Reconcile → Freeze Core
-Status: Basic introduction / repository bootstrap
-```
-
-The next engineering milestone is **NOVA Core Closure 0.1 — Phase A: Canonical Graph Kernel**.
+NOVA Core Closure does not collapse EML, ISQL, SOS, Cl-safe, HSO, or other EveMissLab systems into the Core. Those systems connect through versioned interfaces after the Core semantic contract is stable.

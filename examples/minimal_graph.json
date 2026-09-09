@@ -1,0 +1,28 @@
+{
+  "header": {
+    "nova_core_version": "0.1.0",
+    "schema_version": "0.1.0",
+    "feature_flags": ["graph-kernel"]
+  },
+  "modules": [
+    {
+      "id": "app",
+      "graphs": [
+        {
+          "id": "main",
+          "inputs": ["x"],
+          "outputs": ["y"],
+          "nodes": [
+            {
+              "id": "identity_1",
+              "kind": "Identity",
+              "inputs": ["x"],
+              "outputs": ["y"],
+              "future_extension": {"retained": true}
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
