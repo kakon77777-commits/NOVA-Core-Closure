@@ -2,3 +2,7 @@
 __pycache__/
 .pytest_cache/
 /_source_zips_archive/
+/NOVA_Core_Closure_Round_*.zip
+/NOVA_Canonical_Architecture_Map_v0.1_*.zip
+/NOVA_CANONICAL_ARCHITECTURE_MAP_v0.1.md
+/NOVA_CORE_CLOSURE_0.1_MILESTONE*.md
