@@ -259,3 +259,24 @@ Only a candidate that passes NOVA's deterministic validation boundary may be com
 The RVP core follows `C → G → S`; NOVA effect policy is checked afterward as an integration boundary. SOS does not replace NOVA type/shape/effect semantics.
 
 **G5 is sealed. Next:** Round 12 begins G6 — the explicit execution-paradigm planner.
+
+## Round 12 — G6 Explicit Execution-Paradigm Planner
+
+**Implemented and sealed.** NOVA now classifies explicit computation regions in the sixteenfold paradigm space and ranks legal strategy candidates with transparent cost evidence, bonding rules, and conservative fallback.
+
+Round 12 adds:
+
+- all 16 `{C,D} × {C,J,P,R} × {C,D}` paradigm tags;
+- evidence-driven subgraph/region classification;
+- explicit strategy candidates and relative cost decomposition;
+- profile-dependent ranking without graph mutation;
+- `C → J → P → R` fill-axis bonding monotonicity;
+- asymmetric C↔D conversion obligations;
+- stable `R` terminality and explicit stability reset;
+- deterministic fallback when a ranked chain is illegal;
+- API and CLI `paradigm classify / plan / validate-bonds`;
+- G6 verification matrix and machine-readable seal.
+
+Recognition keeps explicit precompute, storage, and maintenance costs. The planner does not claim global optimality and does not alter Core semantics.
+
+**G6 is sealed. Next:** Round 13 begins G7 — ISQL high-dimensional semantic interface and ambiguity-preserving intent-to-candidate-graph conversion.

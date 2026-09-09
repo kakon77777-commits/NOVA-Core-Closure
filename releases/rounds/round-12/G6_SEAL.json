@@ -1,0 +1,204 @@
+{
+  "acceptance": {
+    "bonding": true,
+    "dense_parallel": true,
+    "fallback": true,
+    "profile_evidence": true,
+    "sequential": true,
+    "space_conversion": true,
+    "sparse_jump": true,
+    "stable_recognition": true
+  },
+  "gate": "G6",
+  "observed": {
+    "dense_parallel": {
+      "fallback_used": false,
+      "plan_hash": "sha256:b696a98ac7d8e38d9174ac38833dd9e91b1b30a15693f0fe7cc7df3a6c3bd571",
+      "selected_codes": [
+        "DPD"
+      ],
+      "selected_costs": [
+        {
+          "maintenance": 0.0,
+          "online_work": 12.5,
+          "parallel_sync": 8.0,
+          "precompute": 0.0,
+          "random_access": 0.0,
+          "risk_penalty": 2.0,
+          "space_conversion": 0.0,
+          "storage": 0.0,
+          "total": 22.5
+        }
+      ],
+      "selected_fills": [
+        "P"
+      ],
+      "total_cost": 22.5
+    },
+    "illegal_r_followed": {
+      "conversion_cost": 0.0,
+      "legal": false,
+      "obligations": [],
+      "violations": [
+        {
+          "from_code": "DRD",
+          "message": "R is terminal while the recognition structure remains stable",
+          "rule": "recognition_terminal",
+          "to_code": "DPD",
+          "transition_index": 0
+        },
+        {
+          "from_code": "DRD",
+          "message": "fill complexity may only stay level or descend C→J→P→R",
+          "rule": "fill_monotonicity",
+          "to_code": "DPD",
+          "transition_index": 0
+        }
+      ]
+    },
+    "mixed_fallback": {
+      "fallback_used": true,
+      "plan_hash": "sha256:bf7b8983caeb099380a908c19c2b3de76085b154f5ca33290a90d50f7d55d552",
+      "selected_codes": [
+        "DCD",
+        "DCD"
+      ],
+      "selected_costs": [
+        {
+          "maintenance": 0.0,
+          "online_work": 100.0,
+          "parallel_sync": 0.0,
+          "precompute": 0.0,
+          "random_access": 0.0,
+          "risk_penalty": 0.0,
+          "space_conversion": 0.0,
+          "storage": 0.0,
+          "total": 100.0
+        },
+        {
+          "maintenance": 0.0,
+          "online_work": 100.0,
+          "parallel_sync": 0.0,
+          "precompute": 0.0,
+          "random_access": 0.0,
+          "risk_penalty": 0.0,
+          "space_conversion": 0.0,
+          "storage": 0.0,
+          "total": 100.0
+        }
+      ],
+      "selected_fills": [
+        "C",
+        "C"
+      ],
+      "total_cost": 200.0
+    },
+    "profile_ranking": {
+      "fast_plan_hash": "sha256:22295c40698a69c14d455bc90751d66396320daa09f65b1155cf43e0b3ce9347",
+      "fast_selected": "DPD",
+      "graph_hash": "sha256:8a8cdf6eca50b93649101332d38287a3c865073d5707b5f5a2fdca96b06a72c5",
+      "slow_plan_hash": "sha256:de3862ce31ad40e5a7ef2a118c3eb531bdeb522e411bb904aa5ecae3e018991d",
+      "slow_selected": "DCD"
+    },
+    "reset_restart": {
+      "conversion_cost": 0.0,
+      "legal": true,
+      "obligations": [
+        {
+          "cost": 0.0,
+          "kind": "stability_reset",
+          "message": "stability collapse explicitly starts a new paradigm-chain segment",
+          "transition_index": 0
+        }
+      ],
+      "violations": []
+    },
+    "sequential_loop": {
+      "fallback_used": false,
+      "plan_hash": "sha256:ecc6ca37922c840028e056f184a3db08932fc70d399fdf5589d08075212d68fa",
+      "selected_codes": [
+        "DCD"
+      ],
+      "selected_costs": [
+        {
+          "maintenance": 0.0,
+          "online_work": 100.0,
+          "parallel_sync": 0.0,
+          "precompute": 0.0,
+          "random_access": 0.0,
+          "risk_penalty": 0.0,
+          "space_conversion": 0.0,
+          "storage": 0.0,
+          "total": 100.0
+        }
+      ],
+      "selected_fills": [
+        "C"
+      ],
+      "total_cost": 100.0
+    },
+    "space_conversion": {
+      "c_to_d_cost": 1.0,
+      "d_to_c_cost": 10.0,
+      "d_to_c_obligations": [
+        {
+          "cost": 10.0,
+          "kind": "reconstruction_assumption",
+          "message": "discrete-to-continuous reconstruction is expensive and requires interpolation assumptions",
+          "transition_index": 0
+        }
+      ]
+    },
+    "sparse_jump": {
+      "fallback_used": false,
+      "plan_hash": "sha256:69da83b5ab0dc6a6aa89132039b03f3e13ba6b88e53682e44db68255521b4af5",
+      "selected_codes": [
+        "DJD"
+      ],
+      "selected_costs": [
+        {
+          "maintenance": 0.0,
+          "online_work": 35.0,
+          "parallel_sync": 0.0,
+          "precompute": 0.0,
+          "random_access": 10.0,
+          "risk_penalty": 2.0,
+          "space_conversion": 0.0,
+          "storage": 0.0,
+          "total": 47.0
+        }
+      ],
+      "selected_fills": [
+        "J"
+      ],
+      "total_cost": 47.0
+    },
+    "stable_recognition": {
+      "fallback_used": false,
+      "plan_hash": "sha256:4af28bfcad2df8e8df452364513366ceb8dc297a06fdbcd378d85a417615f639",
+      "selected_codes": [
+        "DRD"
+      ],
+      "selected_costs": [
+        {
+          "maintenance": 4.0,
+          "online_work": 0.0,
+          "parallel_sync": 0.0,
+          "precompute": 4.0,
+          "random_access": 0.0,
+          "risk_penalty": 1.0,
+          "space_conversion": 0.0,
+          "storage": 4.0,
+          "total": 13.0
+        }
+      ],
+      "selected_fills": [
+        "R"
+      ],
+      "total_cost": 13.0
+    }
+  },
+  "runtime_version": "0.12.0",
+  "schema_version": "0.1.0",
+  "status": "sealed"
+}

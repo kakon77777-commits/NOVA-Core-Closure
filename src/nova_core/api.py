@@ -20,6 +20,8 @@ from .editing import ProjectionEditCandidate, interpret_structured_text_edit
 from .interactive import NodeGraphEdit, preview_node_graph_edit as _preview_node_graph_edit
 from .formula_editing import preview_formula_edit as _preview_formula_edit
 from .notebook import Notebook, NotebookResult, run_notebook as _run_notebook
+from .paradigm import PlannerProfile
+from .paradigm_planner import ExecutionStrategyPlan, plan_graph as _plan_graph
 
 
 
@@ -405,3 +407,16 @@ def lower_operator_ids(operator_ids, *, context=None, module_id="app", graph_id=
         input_symbol=input_symbol,
         output_symbol=output_symbol,
     )
+
+
+def plan_project_paradigms(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+    profile: PlannerProfile | None = None,
+    *,
+    stability_resets: tuple[int, ...] | list[int] = (),
+) -> ExecutionStrategyPlan:
+    loaded = load_project(project)
+    graph, _ = _find_graph(loaded, module_id, graph_id)
+    return _plan_graph(graph, profile, stability_resets=stability_resets)

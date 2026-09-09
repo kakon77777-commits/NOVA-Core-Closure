@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-from .api import audit_project_ai_build, commit_project_ai_build, diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_project_ai_build, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan, list_operator_descriptors, compose_operator_ids, lower_operator_ids
+from .api import audit_project_ai_build, commit_project_ai_build, diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_project_ai_build, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan, plan_project_paradigms, list_operator_descriptors, compose_operator_ids, lower_operator_ids
 from .autodiff import DifferentiationRequest, gradient_symbol
 from .canonical import semantic_hash
 from .errors import AIBuildError, InteropError, NovaError, ProjectionEditError, ResourcePlanningError
@@ -22,6 +22,8 @@ from .resources import decode_memory_plan, decode_symbol_types, memory_plan_hash
 from .audit import project_audit_view
 from .codec import encode_project
 from .sos import CompositionContext, closure_hash
+from .paradigm import PlannerProfile, extract_strategy_regions, paradigm_by_code
+from .paradigm_planner import rank_candidates, validate_bonds, plan_hash
 
 
 def _runtime_value(value: Any) -> Any:
@@ -196,6 +198,19 @@ def _parser() -> argparse.ArgumentParser:
         if name == "lower":
             cmd.add_argument("--output", required=True)
 
+    paradigm = sub.add_parser("paradigm")
+    paradigm_sub = paradigm.add_subparsers(dest="paradigm_command", required=True)
+    for name in ("classify", "plan"):
+        cmd = paradigm_sub.add_parser(name)
+        cmd.add_argument("program")
+        cmd.add_argument("--module", default="app")
+        cmd.add_argument("--graph", default="main")
+        cmd.add_argument("--profile")
+    bonds = paradigm_sub.add_parser("validate-bonds")
+    bonds.add_argument("codes", nargs="+")
+    bonds.add_argument("--reset-after", action="append", type=int, default=[])
+    bonds.add_argument("--conversion-weight", type=float, default=1.0)
+
     interop = sub.add_parser("interop")
     interop_sub = interop.add_subparsers(dest="interop_command", required=True)
     for name in ("inspect", "roundtrip"):
@@ -212,6 +227,15 @@ def _load_symbol_types(path: str | None):
     if not isinstance(raw, dict):
         raise ResourcePlanningError("symbol type file must contain a JSON object")
     return decode_symbol_types(raw)
+
+
+def _load_planner_profile(path: str | None) -> PlannerProfile:
+    if not path:
+        return PlannerProfile()
+    raw = json.loads(Path(path).read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise NovaError("planner profile must contain a JSON object")
+    return PlannerProfile(**raw)
 
 
 def _load_npy(path: str) -> np.ndarray:
@@ -252,6 +276,41 @@ def _write_candidate_project(input_path: Path, output_path: Path, candidate, *, 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
+        if args.command == "paradigm":
+            if args.paradigm_command == "validate-bonds":
+                tags = tuple(paradigm_by_code(code) for code in args.codes)
+                decision = validate_bonds(tags, stability_resets=tuple(args.reset_after), conversion_weight=args.conversion_weight)
+                print(json.dumps({"ok": decision.legal, "decision": decision.to_record()}, ensure_ascii=False, sort_keys=True))
+                return 0 if decision.legal else 1
+            project_value = load_project(Path(args.program))
+            graph_value = find_graph(project_value, args.module, args.graph)
+            profile = _load_planner_profile(args.profile)
+            if args.paradigm_command == "classify":
+                regions = extract_strategy_regions(graph_value)
+                payload = {
+                    "ok": True,
+                    "graph_semantic_hash": semantic_hash(graph_value),
+                    "regions": [
+                        {
+                            "region_id": region.region_id,
+                            "node_ids": list(region.node_ids),
+                            "node_kinds": list(region.node_kinds),
+                            "base": region.base.value,
+                            "observation": region.observation.value,
+                            "evidence": [item.to_record() for item in region.evidence],
+                            "candidates": [item.to_record() for item in rank_candidates(region, profile)],
+                        }
+                        for region in regions
+                    ],
+                }
+                print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+                return 0
+            plan = plan_project_paradigms(project_value, args.module, args.graph, profile)
+            payload = plan.to_record()
+            payload.update({"ok": True, "plan_hash": plan_hash(plan)})
+            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+            return 0
+
         if args.command == "sos":
             if args.sos_command == "list":
                 descriptors = list_operator_descriptors()
