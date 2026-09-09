@@ -8,7 +8,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_round06_package_version():
-    assert nova_core.__version__ == "0.6.0"
+    assert nova_core.__version__ == "0.7.0"
 
 
 def test_readme_marks_round06_implemented_and_round07_next():
@@ -20,7 +20,7 @@ def test_readme_marks_round06_implemented_and_round07_next():
 
 def test_pyproject_version_dependency_and_cli_entrypoint():
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "0.6.0"' in text
+    assert 'version = "0.7.0"' in text
     assert 'numpy>=' in text
     assert 'nova = "nova_core.cli:main"' in text
 
@@ -34,7 +34,7 @@ def test_executable_linear_example_runs():
 
 
 def test_default_schema_header_tracks_round06_core_version_without_schema_break():
-    assert nova_core.SchemaHeader().nova_core_version == "0.6.0"
+    assert nova_core.SchemaHeader().nova_core_version == "0.7.0"
     assert nova_core.SchemaHeader().schema_version == "0.1.0"
 
 

@@ -15,6 +15,8 @@ from .types import TensorType
 from .model import Graph, Project
 from .runtime import ExecutionResult
 from .training import TrainingConfig, TrainingResult, train_graph as _train_graph
+from .diff import GraphDiff, diff_graphs
+from .editing import ProjectionEditCandidate, interpret_structured_text_edit
 
 
 
@@ -177,3 +179,36 @@ def interop_to_dlpack(value: Any):
 
 def interop_from_dlpack(value: Any, expected: TensorType | None = None):
     return _interop_from_dlpack(value, expected=expected)
+
+
+def diff_project_graphs(
+    base: Project | str | bytes | Mapping[str, Any] | Path,
+    target: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+) -> GraphDiff:
+    base_project = load_project(base)
+    target_project = load_project(target)
+    base_graph, _ = _find_graph(base_project, module_id, graph_id)
+    target_graph, _ = _find_graph(target_project, module_id, graph_id)
+    return diff_graphs(base_graph, target_graph)
+
+
+def preview_structured_edit(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+    edited_text: str,
+    *,
+    rationale: str = "",
+    provenance: Mapping[str, Any] | None = None,
+) -> ProjectionEditCandidate:
+    loaded = load_project(project)
+    return interpret_structured_text_edit(
+        loaded,
+        module_id,
+        graph_id,
+        edited_text,
+        rationale=rationale,
+        provenance=provenance,
+    )

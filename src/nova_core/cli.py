@@ -8,14 +8,16 @@ from typing import Any
 
 import numpy as np
 
-from .api import find_graph, load_project, run_project, run_project_gradient, train_project
+from .api import diff_project_graphs, find_graph, load_project, preview_structured_edit, run_project, run_project_gradient, train_project
 from .autodiff import DifferentiationRequest, gradient_symbol
 from .canonical import semantic_hash
-from .errors import InteropError, NovaError
+from .errors import InteropError, NovaError, ProjectionEditError
 from .gradcheck import check_gradient
 from .interop import dlpack_device, from_dlpack, to_dlpack
-from .projection import project_formula, project_text
+from .projection import project_editable_text, project_formula, project_graph_view, project_text
 from .training import TrainingConfig
+from .audit import project_audit_view
+from .codec import encode_project
 
 
 def _runtime_value(value: Any) -> Any:
@@ -58,7 +60,7 @@ def _parser() -> argparse.ArgumentParser:
     project.add_argument("program")
     project.add_argument("--module", default="app")
     project.add_argument("--graph", default="main")
-    project.add_argument("--view", choices=("text", "formula"), required=True)
+    project.add_argument("--view", choices=("text", "formula", "graph", "editable"), required=True)
 
     grad = sub.add_parser("grad")
     grad.add_argument("program")
@@ -83,6 +85,28 @@ def _parser() -> argparse.ArgumentParser:
     train.add_argument("--steps", type=int, required=True)
     train.add_argument("--learning-rate", type=float, required=True)
     train.add_argument("--backend", choices=("interpreter", "numpy"), default="numpy")
+
+
+    diff_cmd = sub.add_parser("diff")
+    diff_cmd.add_argument("base_program")
+    diff_cmd.add_argument("target_program")
+    diff_cmd.add_argument("--module", default="app")
+    diff_cmd.add_argument("--graph", default="main")
+
+    preview = sub.add_parser("edit-preview")
+    preview.add_argument("program")
+    preview.add_argument("--edited", required=True)
+    preview.add_argument("--module", default="app")
+    preview.add_argument("--graph", default="main")
+    preview.add_argument("--rationale", default="")
+
+    commit = sub.add_parser("edit-commit")
+    commit.add_argument("program")
+    commit.add_argument("--edited", required=True)
+    commit.add_argument("--output", required=True)
+    commit.add_argument("--module", default="app")
+    commit.add_argument("--graph", default="main")
+    commit.add_argument("--rationale", default="")
 
     interop = sub.add_parser("interop")
     interop_sub = interop.add_subparsers(dest="interop_command", required=True)
@@ -131,6 +155,38 @@ def main(argv: list[str] | None = None) -> int:
             print(json.dumps(payload, sort_keys=True))
             return 0
 
+        if args.command == "diff":
+            diff = diff_project_graphs(Path(args.base_program), Path(args.target_program), args.module, args.graph)
+            print(json.dumps(diff.to_dict(), ensure_ascii=False, sort_keys=True))
+            return 0
+
+        if args.command in {"edit-preview", "edit-commit"}:
+            input_path = Path(args.program)
+            edited_text = Path(args.edited).read_text(encoding="utf-8")
+            candidate = preview_structured_edit(
+                input_path, args.module, args.graph, edited_text, rationale=args.rationale
+            )
+            if args.command == "edit-preview":
+                print(json.dumps(project_audit_view(candidate), ensure_ascii=False, sort_keys=True))
+                return 0
+            output_path = Path(args.output)
+            try:
+                same_target = input_path.resolve() == output_path.resolve()
+            except OSError:
+                same_target = input_path.absolute() == output_path.absolute()
+            if same_target:
+                raise ProjectionEditError("edit-commit refuses to overwrite the input project")
+            output_path.write_text(encode_project(candidate.candidate_project), encoding="utf-8")
+            print(json.dumps({
+                "ok": True,
+                "output": str(output_path),
+                "before_semantic_hash": candidate.before_semantic_hash,
+                "candidate_semantic_hash": candidate.candidate_semantic_hash,
+                "before_record_hash": candidate.before_record_hash,
+                "candidate_record_hash": candidate.candidate_record_hash,
+            }, ensure_ascii=False, sort_keys=True))
+            return 0
+
         project = load_project(Path(args.program))
         if args.command == "check":
             print(json.dumps({"ok": True, "semantic_hash": semantic_hash(project)}, sort_keys=True))
@@ -170,7 +226,14 @@ def main(argv: list[str] | None = None) -> int:
             return 0
         if args.command == "project":
             graph = find_graph(project, args.module, args.graph)
-            print(project_text(graph) if args.view == "text" else project_formula(graph))
+            if args.view == "text":
+                print(project_text(graph))
+            elif args.view == "formula":
+                print(project_formula(graph))
+            elif args.view == "graph":
+                print(json.dumps(project_graph_view(graph), ensure_ascii=False, sort_keys=True))
+            else:
+                print(project_editable_text(graph), end="")
             return 0
         if args.command == "train":
             raw_inputs = json.loads(Path(args.inputs).read_text(encoding="utf-8"))

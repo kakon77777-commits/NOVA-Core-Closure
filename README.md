@@ -110,9 +110,11 @@ Round 05 closes the original G1 three-model exit condition with:
 
 **G1 is now sealed.** The original executable-core requirements have a reference implementation, tests, examples, and a versioned schema.
 
-### Round 07 — G2 Projection & Editing
+### Round 07 — Projection Integrity & Structured Editing
 
-**Next.** Enter G2: projection consistency, structured editing, structural diff, error views, and semantic-hash-preserving projection workflows.
+**Implemented.** G2 core now has multi-projection semantic-hash invariance, a lossless editable structured-text projection, machine graph view, field-level structural/semantic diff, typed error/audit views, and a projection edit pipeline that produces a validated **Candidate GraphPatch** before explicit commit.
+
+Formula projection remains read-only in this round; full visual editing and Notebook work continue in **Round 08**.
 
 ## Quick start
 
@@ -122,6 +124,9 @@ nova check examples/differentiable_linear.json
 nova run examples/differentiable_linear.json --module app --graph main --inputs examples/differentiable_inputs.json --parameters examples/differentiable_parameters.json --backend numpy
 nova grad examples/differentiable_linear.json --module app --graph main --target loss --wrt W --wrt b --inputs examples/differentiable_inputs.json --parameters examples/differentiable_parameters.json --backend numpy --check
 nova train examples/training_linear.json --module app --graph main --target loss --wrt W --wrt b --inputs examples/training_linear_inputs.json --parameters examples/training_linear_parameters.json --steps 60 --learning-rate 0.2 --backend numpy
+# Projection/editing examples:
+# nova project examples/editing/base_project.json --module app --graph main --view editable
+# nova edit-preview examples/editing/base_project.json --edited examples/editing/edited_graph.json --module app --graph main
 # DLPack diagnostics operate on NumPy .npy runtime artifacts:
 # nova interop inspect tensor.npy
 # nova interop roundtrip tensor.npy

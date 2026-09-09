@@ -200,3 +200,82 @@ def project_formula(graph: Graph) -> str:
     if missing:
         raise ProjectionError("formula projection is missing graph outputs", context={"missing": missing})
     return "\n".join(f"{name} = {expr[name]}" for name in graph.outputs)
+
+
+def project_graph_view(graph: Graph) -> dict[str, object]:
+    from .canonical import graph_record, semantic_hash
+
+    record = graph_record(graph, semantic=False)
+    return {
+        "semantic_hash": semantic_hash(graph),
+        "id": record["id"],
+        "inputs": record["inputs"],
+        "outputs": record["outputs"],
+        "nodes": record["nodes"],
+        "edges": record["edges"],
+        "constraints": record["constraints"],
+        "attributes": record["attributes"],
+    }
+
+
+def project_editable_text(graph: Graph) -> str:
+    import json
+    from .canonical import graph_record
+
+    return json.dumps(
+        graph_record(graph, semantic=False),
+        ensure_ascii=False,
+        sort_keys=True,
+        indent=2,
+    ) + "\n"
+
+
+def parse_editable_text(text: str) -> Graph:
+    import json
+    from .codec import decode_graph
+    from .errors import DecodeError
+
+    try:
+        payload = json.loads(text)
+    except json.JSONDecodeError as exc:
+        raise DecodeError(f"invalid editable graph JSON: {exc.msg}") from exc
+    return decode_graph(payload)
+
+
+def project_snapshot(graph: Graph):
+    from .canonical import semantic_hash
+    from .projection_model import ProjectionSnapshot
+
+    before = semantic_hash(graph)
+    text = project_text(graph)
+    editable = project_editable_text(graph)
+    graph_view = project_graph_view(graph)
+    formula: str | None
+    formula_error = None
+    formula_reversibility = "read_only"
+    try:
+        formula = project_formula(graph)
+    except ProjectionError as exc:
+        formula = None
+        formula_error = exc.to_dict()
+        formula_reversibility = "unsupported"
+    after = semantic_hash(graph)
+    if after != before:
+        raise ProjectionError(
+            "projection mutated canonical graph semantic identity",
+            context={"before": before, "after": after},
+        )
+    return ProjectionSnapshot(
+        semantic_hash=before,
+        text=text,
+        formula=formula,
+        graph_view=graph_view,
+        editable_text=editable,
+        reversibility={
+            "text": "read_only",
+            "formula": formula_reversibility,
+            "graph": "read_only",
+            "editable": "lossless",
+        },
+        formula_error=formula_error,
+    )

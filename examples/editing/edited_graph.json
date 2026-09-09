@@ -1,0 +1,37 @@
+{
+  "attributes": {
+    "purpose": "editing-demo-updated"
+  },
+  "constraints": [],
+  "edges": [],
+  "id": "main",
+  "inputs": [
+    "x",
+    "b"
+  ],
+  "nodes": [
+    {
+      "attributes": {},
+      "constraints": [],
+      "differentiation_type": null,
+      "effect_type": null,
+      "id": "op",
+      "inputs": [
+        "x",
+        "b"
+      ],
+      "kind": "Multiply",
+      "outputs": [
+        "y"
+      ],
+      "provenance": {},
+      "shape_type": null,
+      "source_projection": null,
+      "value_type": null
+    }
+  ],
+  "outputs": [
+    "y"
+  ],
+  "provenance": {}
+}

@@ -8,8 +8,8 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_round06_package_version_and_schema_header():
-    assert nova_core.__version__ == "0.6.0"
-    assert nova_core.SchemaHeader().nova_core_version == "0.6.0"
+    assert nova_core.__version__ == "0.7.0"
+    assert nova_core.SchemaHeader().nova_core_version == "0.7.0"
     assert nova_core.SchemaHeader().schema_version == "0.1.0"
 
 
@@ -59,4 +59,4 @@ def test_round06_dlpack_zero_copy_smoke():
 
 def test_pyproject_round06_version():
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "0.6.0"' in text
+    assert 'version = "0.7.0"' in text

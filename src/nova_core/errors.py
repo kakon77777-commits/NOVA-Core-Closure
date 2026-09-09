@@ -106,6 +106,10 @@ class ProjectionError(NovaError):
     category = "ProjectionError"
 
 
+class ProjectionEditError(ProjectionError):
+    category = "ProjectionEditError"
+
+
 class DiffError(NovaError):
     category = "DiffError"
 
