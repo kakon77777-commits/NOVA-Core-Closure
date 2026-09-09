@@ -108,3 +108,7 @@ class ProjectionError(NovaError):
 
 class DiffError(NovaError):
     category = "DiffError"
+
+
+class TrainingError(NovaError):
+    category = "TrainingError"

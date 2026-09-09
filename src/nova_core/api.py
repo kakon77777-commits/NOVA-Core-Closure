@@ -12,6 +12,7 @@ from .errors import ValidationError
 from .interpreter import Interpreter
 from .model import Graph, Project
 from .runtime import ExecutionResult
+from .training import TrainingConfig, TrainingResult, train_graph as _train_graph
 
 
 
@@ -149,3 +150,16 @@ def run_project_gradient(
         backend=backend,
     )
 
+
+
+def train_project(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+    inputs: Mapping[str, Any],
+    initial_parameters: Mapping[str, Any],
+    config: TrainingConfig,
+) -> TrainingResult:
+    loaded = load_project(project)
+    graph, _ = _find_graph(loaded, module_id, graph_id)
+    return _train_graph(graph, inputs, initial_parameters, config)

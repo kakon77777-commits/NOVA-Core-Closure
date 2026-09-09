@@ -32,7 +32,7 @@ def _tuple_str(value: Iterable[str] | None) -> tuple[str, ...]:
 
 @dataclass(frozen=True)
 class SchemaHeader:
-    nova_core_version: str = "0.4.0"
+    nova_core_version: str = "0.5.0"
     schema_version: str = "0.1.0"
     feature_flags: tuple[str, ...] = ()
     migration_history: tuple[str, ...] = ()

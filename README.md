@@ -88,9 +88,25 @@ Round 04 includes:
 
 AI or external autograd systems do not define correctness. Finite differences verify the graph-level derivative transform but never replace it.
 
-### Round 05 — G1 Model Closure & Training Validation
+### Round 05 — Model Closure & Training Validation
 
-**Next.** Close the original G1 exit criteria with executable training examples for linear regression, MLP and small attention, plus DLPack/interop validation and model-level differential tests.
+**Implemented.** NOVA now composes its canonical graph, NumPy/interpreter execution, and reverse-mode derivative graph into a deterministic immutable full-batch SGD training runtime. Parameter values remain runtime state; optimizer steps never mutate canonical program identity.
+
+Round 05 closes the original G1 three-model exit condition with:
+
+- Linear Regression training closure;
+- a deterministic small MLP training closure;
+- a small single-head Attention model using MatMul, Transpose, Divide and Softmax;
+- immutable `TrainingState` and structured `TrainingStepRecord`;
+- deterministic runtime-only parameter-state hashing;
+- explicit SGD updates;
+- Python `train_project` API;
+- CLI `nova train`;
+- finite-difference validation for the Attention reverse path.
+
+### Round 06 — DLPack / Interop & G1 Final Seal
+
+**Next.** Complete the remaining G1 interoperability surface, validate Python/DLPack exchange, and issue a final G1 verification matrix before moving to G2 projection/editing work.
 
 ## Quick start
 
@@ -99,6 +115,7 @@ python -m pip install -e .
 nova check examples/differentiable_linear.json
 nova run examples/differentiable_linear.json --module app --graph main --inputs examples/differentiable_inputs.json --parameters examples/differentiable_parameters.json --backend numpy
 nova grad examples/differentiable_linear.json --module app --graph main --target loss --wrt W --wrt b --inputs examples/differentiable_inputs.json --parameters examples/differentiable_parameters.json --backend numpy --check
+nova train examples/training_linear.json --module app --graph main --target loss --wrt W --wrt b --inputs examples/training_linear_inputs.json --parameters examples/training_linear_parameters.json --steps 60 --learning-rate 0.2 --backend numpy
 ```
 
 ## Identity invariant

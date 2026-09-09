@@ -8,12 +8,13 @@ from typing import Any
 
 import numpy as np
 
-from .api import find_graph, load_project, run_project, run_project_gradient
+from .api import find_graph, load_project, run_project, run_project_gradient, train_project
 from .autodiff import DifferentiationRequest, gradient_symbol
 from .canonical import semantic_hash
 from .errors import NovaError
 from .gradcheck import check_gradient
 from .projection import project_formula, project_text
+from .training import TrainingConfig
 
 
 def _runtime_value(value: Any) -> Any:
@@ -69,6 +70,18 @@ def _parser() -> argparse.ArgumentParser:
     grad.add_argument("--parameters")
     grad.add_argument("--backend", choices=("interpreter", "numpy"), default="numpy")
     grad.add_argument("--check", action="store_true")
+
+    train = sub.add_parser("train")
+    train.add_argument("program")
+    train.add_argument("--module", default="app")
+    train.add_argument("--graph", default="main")
+    train.add_argument("--target", required=True)
+    train.add_argument("--wrt", action="append", required=True)
+    train.add_argument("--inputs", required=True)
+    train.add_argument("--parameters", required=True)
+    train.add_argument("--steps", type=int, required=True)
+    train.add_argument("--learning-rate", type=float, required=True)
+    train.add_argument("--backend", choices=("interpreter", "numpy"), default="numpy")
     return parser
 
 
@@ -116,6 +129,42 @@ def main(argv: list[str] | None = None) -> int:
             graph = find_graph(project, args.module, args.graph)
             print(project_text(graph) if args.view == "text" else project_formula(graph))
             return 0
+        if args.command == "train":
+            raw_inputs = json.loads(Path(args.inputs).read_text(encoding="utf-8"))
+            raw_parameters = json.loads(Path(args.parameters).read_text(encoding="utf-8"))
+            config = TrainingConfig(
+                target=args.target,
+                wrt=tuple(args.wrt),
+                steps=args.steps,
+                learning_rate=args.learning_rate,
+                backend=args.backend,
+            )
+            result = train_project(
+                project,
+                args.module,
+                args.graph,
+                {str(k): _runtime_value(v) for k, v in raw_inputs.items()},
+                {str(k): _runtime_value(v) for k, v in raw_parameters.items()},
+                config,
+            )
+            payload = {
+                "ok": True,
+                "target": config.target,
+                "wrt": list(config.wrt),
+                "steps": config.steps,
+                "learning_rate": config.learning_rate,
+                "initial_loss": result.initial_loss,
+                "final_loss": result.final_loss,
+                "loss_history": list(result.state.loss_history),
+                "final_parameters": _jsonable(dict(result.state.parameters)),
+                "parameter_state_hash": result.state.parameter_state_hash,
+                "graph_semantic_hash": result.state.graph_semantic_hash,
+                "derivative_graph_id": result.derivative_graph_id,
+                "derivative_semantic_hash": result.derivative_semantic_hash,
+            }
+            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+            return 0
+
         if args.command == "grad":
             raw_inputs = json.loads(Path(args.inputs).read_text(encoding="utf-8"))
             raw_parameters = {}
