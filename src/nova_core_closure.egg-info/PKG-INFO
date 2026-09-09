@@ -1,8 +1,0 @@
-Metadata-Version: 2.4
-Name: nova-core-closure
-Version: 0.13.0
-Summary: NOVA Core Closure reference implementation — Round 13 G7 ISQL High-Dimensional Semantic Interface
-Author: Neo.K / EveMissLab
-License: Proprietary / research preview
-Requires-Python: >=3.11
-Requires-Dist: numpy>=1.26

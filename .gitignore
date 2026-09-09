@@ -6,3 +6,4 @@ __pycache__/
 /NOVA_Canonical_Architecture_Map_v0.1_*.zip
 /NOVA_CANONICAL_ARCHITECTURE_MAP_v0.1.md
 /NOVA_CORE_CLOSURE_0.1_MILESTONE*.md
+*.egg-info/
