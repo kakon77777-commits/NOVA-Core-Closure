@@ -295,6 +295,12 @@ def _write_candidate_project(input_path: Path, output_path: Path, candidate, *, 
 
 
 def main(argv: list[str] | None = None) -> int:
+    for _stream in (sys.stdout, sys.stderr):
+        if hasattr(_stream, "reconfigure"):
+            try:
+                _stream.reconfigure(encoding="utf-8")
+            except (ValueError, OSError):
+                pass
     args = _parser().parse_args(argv)
     try:
         if args.command == "isql":

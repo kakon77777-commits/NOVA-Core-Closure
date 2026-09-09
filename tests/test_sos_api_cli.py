@@ -23,6 +23,7 @@ def _run_cli(*args: str):
     return subprocess.run(
         [sys.executable, "-m", "nova_core.cli", *args],
         text=True,
+        encoding="utf-8",
         capture_output=True,
         env=env,
         check=False,

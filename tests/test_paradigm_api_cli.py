@@ -13,7 +13,7 @@ from nova_core.codec import encode_project
 def _run_cli(*args: str):
     env = dict(os.environ)
     env["PYTHONPATH"] = "src"
-    return subprocess.run([sys.executable, "-m", "nova_core.cli", *args], text=True, capture_output=True, env=env, check=False)
+    return subprocess.run([sys.executable, "-m", "nova_core.cli", *args], text=True, encoding="utf-8", capture_output=True, env=env, check=False)
 
 
 def _dense_project():
