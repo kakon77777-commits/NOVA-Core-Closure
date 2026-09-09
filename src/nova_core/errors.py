@@ -76,3 +76,31 @@ class MigrationError(NovaError):
 
 class ShapeError(NovaError):
     category = "ShapeError"
+
+
+class ExecutionError(NovaError):
+    category = "ExecutionError"
+
+
+class MissingInputError(ExecutionError):
+    category = "MissingInputError"
+
+
+class RuntimeShapeError(ExecutionError):
+    category = "RuntimeShapeError"
+
+
+class UnsupportedOperationError(ExecutionError):
+    category = "UnsupportedOperationError"
+
+
+class DependencyError(ExecutionError):
+    category = "DependencyError"
+
+
+class BackendError(ExecutionError):
+    category = "BackendError"
+
+
+class ProjectionError(NovaError):
+    category = "ProjectionError"

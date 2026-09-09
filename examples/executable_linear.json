@@ -1,0 +1,33 @@
+{
+  "header": {
+    "nova_core_version": "0.3.0",
+    "schema_version": "0.1.0",
+    "feature_flags": ["graph-kernel", "tensor-shape-kernel", "executable-closure"]
+  },
+  "modules": [
+    {
+      "id": "app",
+      "graphs": [
+        {
+          "id": "main",
+          "inputs": ["X", "W", "b"],
+          "outputs": ["Y"],
+          "nodes": [
+            {
+              "id": "matmul_1",
+              "kind": "MatMul",
+              "inputs": ["X", "W"],
+              "outputs": ["XW"]
+            },
+            {
+              "id": "add_1",
+              "kind": "Add",
+              "inputs": ["XW", "b"],
+              "outputs": ["Y"]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

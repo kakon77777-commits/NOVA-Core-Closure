@@ -4,11 +4,15 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nova-core-closure"
-version = "0.2.0"
-description = "NOVA Core Closure reference implementation — Round 02 Tensor / Shape Semantic Kernel"
+version = "0.3.0"
+description = "NOVA Core Closure reference implementation — Round 03 Executable Closure"
 requires-python = ">=3.11"
 license = {text = "Proprietary / research preview"}
 authors = [{name = "Neo.K / EveMissLab"}]
+dependencies = ["numpy>=1.26"]
+
+[project.scripts]
+nova = "nova_core.cli:main"
 
 [tool.setuptools]
 package-dir = {"" = "src"}

@@ -129,9 +129,19 @@ def canonical_bytes(project: Project, *, semantic: bool = False) -> bytes:
     return canonical_json(project, semantic=semantic).encode("utf-8")
 
 
-def semantic_hash(project: Project) -> str:
-    return "sha256:" + hashlib.sha256(canonical_bytes(project, semantic=True)).hexdigest()
+def _canonical_object_bytes(value: Project | Graph, *, semantic: bool) -> bytes:
+    if isinstance(value, Project):
+        record = project_record(value, semantic=semantic)
+    elif isinstance(value, Graph):
+        record = graph_record(value, semantic=semantic)
+    else:
+        raise TypeError("canonical hashing currently supports Project or Graph")
+    return json.dumps(record, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
 
 
-def record_hash(project: Project) -> str:
-    return "sha256:" + hashlib.sha256(canonical_bytes(project, semantic=False)).hexdigest()
+def semantic_hash(project: Project | Graph) -> str:
+    return "sha256:" + hashlib.sha256(_canonical_object_bytes(project, semantic=True)).hexdigest()
+
+
+def record_hash(project: Project | Graph) -> str:
+    return "sha256:" + hashlib.sha256(_canonical_object_bytes(project, semantic=False)).hexdigest()
