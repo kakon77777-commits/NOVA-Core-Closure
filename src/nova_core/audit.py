@@ -50,3 +50,65 @@ def project_audit_view(candidate: ProjectionEditCandidate) -> dict[str, Any]:
         "patch": _patch_view(candidate.patch),
         "diff": candidate.diff.to_dict(),
     }
+
+
+def project_ai_build_audit(candidate) -> dict[str, Any]:
+    """Machine-readable Nova-A candidate review surface."""
+    return {
+        "status": candidate.status.value,
+        "request_hash": candidate.request_hash,
+        "request": {
+            "request_id": candidate.request.provenance.request_id,
+            "actor_id": candidate.request.provenance.actor_id,
+            "source": candidate.request.provenance.source,
+            "model_id": candidate.request.provenance.model_id,
+            "session_id": candidate.request.provenance.session_id,
+        },
+        "sandbox": {
+            "passed": candidate.sandbox.passed,
+            "violations": [
+                {"kind": v.kind, "message": v.message, "evidence": dict(v.evidence)}
+                for v in candidate.sandbox.violations
+            ],
+        },
+        "before_semantic_hash": candidate.before_semantic_hash,
+        "before_record_hash": candidate.before_record_hash,
+        "candidate_semantic_hash": candidate.candidate_semantic_hash,
+        "candidate_record_hash": candidate.candidate_record_hash,
+        "constraints": [
+            {
+                "kind": v.kind,
+                "subject": v.subject,
+                "passed": v.passed,
+                "message": v.message,
+                "expected": v.expected,
+                "observed": v.observed,
+            }
+            for v in candidate.constraints
+        ],
+        "tests": [
+            {
+                "name": v.name,
+                "passed": v.passed,
+                "backend": v.backend,
+                "message": v.message,
+                "expected_outputs": dict(v.expected_outputs),
+                "observed_outputs": dict(v.observed_outputs),
+            }
+            for v in candidate.tests
+        ],
+        "differentiation": [
+            {
+                "target": v.target,
+                "wrt": list(v.wrt),
+                "passed": v.passed,
+                "derivative_semantic_hash": v.derivative_semantic_hash,
+                "gradients": dict(v.gradients),
+                "message": v.message,
+            }
+            for v in candidate.differentiation
+        ],
+        "patch": _patch_view(candidate.request.patch),
+        "diff": None if candidate.diff is None else candidate.diff.to_dict(),
+        "error": None if candidate.error is None else dict(candidate.error),
+    }

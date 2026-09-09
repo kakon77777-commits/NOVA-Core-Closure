@@ -309,3 +309,47 @@ def select_project_memory_plan(
     loaded = load_project(project)
     graph, _ = _find_graph(loaded, module_id, graph_id)
     return select_memory_plan(graph, candidate, symbol_types)
+
+
+def load_ai_build_request(source):
+    from .ai_build import AIBuildRequest, decode_ai_build_request
+
+    if isinstance(source, AIBuildRequest):
+        return source
+    if isinstance(source, Path):
+        return decode_ai_build_request(source.read_text(encoding="utf-8"))
+    if isinstance(source, str):
+        stripped = source.lstrip()
+        if stripped.startswith("{"):
+            return decode_ai_build_request(source)
+        path = Path(source)
+        try:
+            if "\n" not in source and path.exists() and path.is_file():
+                return decode_ai_build_request(path.read_text(encoding="utf-8"))
+        except OSError:
+            pass
+    return decode_ai_build_request(source)
+
+
+def preview_project_ai_build(project, request):
+    from .ai_build import preview_ai_build
+
+    loaded = load_project(project)
+    loaded_request = load_ai_build_request(request)
+    return preview_ai_build(loaded, loaded_request)
+
+
+def audit_project_ai_build(project, request):
+    from .audit import project_ai_build_audit
+
+    return project_ai_build_audit(preview_project_ai_build(project, request))
+
+
+def commit_project_ai_build(project, request):
+    from .ai_build import AIBuildTransaction
+
+    loaded = load_project(project)
+    loaded_request = load_ai_build_request(request)
+    tx = AIBuildTransaction(loaded)
+    candidate = tx.preview(loaded_request)
+    return tx.commit(candidate)

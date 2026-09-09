@@ -144,3 +144,15 @@ class DTypeInteropError(InteropError):
 
 class DLPackInteropError(InteropError):
     category = "DLPackInteropError"
+
+
+class AIBuildError(NovaError):
+    category = "AIBuildError"
+
+
+class AISandboxError(AIBuildError):
+    category = "AISandboxError"
+
+
+class AIBuildConflictError(AIBuildError):
+    category = "AIBuildConflictError"

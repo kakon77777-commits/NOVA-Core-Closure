@@ -218,3 +218,35 @@ $$
 The Graph schema remains `0.1.0`; this is a compiler/runtime planning layer, not a new program ontology.
 
 **Next:** Round 10 begins G4 — Nova-A AI-native GraphPatch construction, transactions, provenance, sandboxing, and differential review.
+
+## Round 10 — G4 Nova-A AI-Native Graph Construction
+
+**Implemented and sealed.** NOVA now accepts structured AI-native build requests that modify the canonical program graph directly through the existing GraphPatch transaction model, without first generating source text.
+
+Round 10 adds:
+
+- deterministic AI request identity and provenance;
+- structural sandbox policies and patch budgets;
+- post-build constraint API;
+- structured execution tests;
+- differentiation requests as build obligations;
+- READY / REJECTED candidate previews;
+- semantic/structural diff and audit evidence;
+- stale/tampered candidate protection;
+- commit-time preview reproduction;
+- exact rollback;
+- API and CLI `ai-build-preview`, `ai-build-audit`, `ai-build-commit`.
+
+The central rule is:
+
+$$
+\boxed{
+\text{AI Build Request}
+\neq
+\text{Program Authority}
+}
+$$
+
+Only a candidate that passes NOVA's deterministic validation boundary may be committed.
+
+**G4 is sealed. Next:** Round 11 begins G5 SOS / Cl-safe operator composition and failure isolation.

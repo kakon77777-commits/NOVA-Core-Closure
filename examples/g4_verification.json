@@ -1,0 +1,39 @@
+{
+  "acceptance": {
+    "add_layer": true,
+    "change_shape_type": true,
+    "constraint_driven_repair": true,
+    "differentiation_request": true,
+    "rollback": true,
+    "sandbox_rejection": true,
+    "stale_candidate_rejection": true,
+    "structured_test": true
+  },
+  "add_layer_candidate_hash": "sha256:0b6dcb4b12943f734042e085d625041a48e9e8b572a4bd9ac653a989d21c6c96",
+  "base_record_hash": "sha256:9f97cd4ae310ffd2b1df4af7aa1600efa6dfbc4cf00c30d01d9e1e67e37059f1",
+  "base_semantic_hash": "sha256:0f822c5e180f9a2fc19ef9ae993a02d7d29a22a3d2a989b6b6442bbf9f925fba",
+  "evidence": {
+    "derivative_semantic_hash": "sha256:6d30754aa6c06d6e1f2e0ce2e8f312fcc4ec1a2876310107e4d4f577dd7dad12",
+    "effect_rejection_kinds": [
+      "effects_forbidden"
+    ],
+    "shape_mismatch_constraint_passed": false,
+    "structured_test_observed": {
+      "z": 0.0
+    }
+  },
+  "fresh_commit_hash": "sha256:47cc51cec23412698a23b0e98215c9acb4ab066e11b91e5781286a2ad2c2312e",
+  "gate": "G4",
+  "release": {
+    "compile_warnings_as_errors": true,
+    "feature_commit": "12bea3ec37a521734caaa47f2cfbedb3e1240f06",
+    "real_cli_smoke_passed": true,
+    "source_hygiene_passed": true,
+    "test_count": 289,
+    "tracked_files_before_manifest_refresh": 157
+  },
+  "runtime_version": "0.10.0",
+  "schema_version": "0.1.0",
+  "status": "sealed",
+  "typed_shape_candidate_hash": "sha256:1dfbfcb7f438d665f4a8b086e124d37c1d911d2c7768565b99148e024b5144cc"
+}

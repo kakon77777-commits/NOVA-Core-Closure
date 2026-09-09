@@ -8,10 +8,10 @@ from typing import Any
 
 import numpy as np
 
-from .api import diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan
+from .api import audit_project_ai_build, commit_project_ai_build, diff_project_graphs, find_graph, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_project_ai_build, preview_structured_edit, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan
 from .autodiff import DifferentiationRequest, gradient_symbol
 from .canonical import semantic_hash
-from .errors import InteropError, NovaError, ProjectionEditError, ResourcePlanningError
+from .errors import AIBuildError, InteropError, NovaError, ProjectionEditError, ResourcePlanningError
 from .gradcheck import check_gradient
 from .interop import dlpack_device, from_dlpack, to_dlpack
 from .interactive import decode_node_graph_edits
@@ -171,6 +171,19 @@ def _parser() -> argparse.ArgumentParser:
     resource_select.add_argument("--graph", default="main")
     resource_select.add_argument("--types")
 
+    ai_preview = sub.add_parser("ai-build-preview")
+    ai_preview.add_argument("program")
+    ai_preview.add_argument("request")
+
+    ai_audit = sub.add_parser("ai-build-audit")
+    ai_audit.add_argument("program")
+    ai_audit.add_argument("request")
+
+    ai_commit = sub.add_parser("ai-build-commit")
+    ai_commit.add_argument("program")
+    ai_commit.add_argument("request")
+    ai_commit.add_argument("--output", required=True)
+
     interop = sub.add_parser("interop")
     interop_sub = interop.add_subparsers(dest="interop_command", required=True)
     for name in ("inspect", "roundtrip"):
@@ -227,6 +240,43 @@ def _write_candidate_project(input_path: Path, output_path: Path, candidate, *, 
 def main(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
     try:
+        if args.command in {"ai-build-preview", "ai-build-audit", "ai-build-commit"}:
+            input_path = Path(args.program)
+            request_path = Path(args.request)
+            candidate = preview_project_ai_build(input_path, request_path)
+            if args.command == "ai-build-preview":
+                payload = {
+                    "status": candidate.status.value,
+                    "request_hash": candidate.request_hash,
+                    "before_semantic_hash": candidate.before_semantic_hash,
+                    "before_record_hash": candidate.before_record_hash,
+                    "candidate_semantic_hash": candidate.candidate_semantic_hash,
+                    "candidate_record_hash": candidate.candidate_record_hash,
+                    "sandbox_passed": candidate.sandbox.passed,
+                    "error": None if candidate.error is None else dict(candidate.error),
+                }
+                print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
+                return 0
+            if args.command == "ai-build-audit":
+                print(json.dumps(audit_project_ai_build(input_path, request_path), ensure_ascii=False, sort_keys=True))
+                return 0
+            output_path = Path(args.output)
+            if _same_path(input_path, output_path):
+                raise AIBuildError("ai-build-commit refuses to overwrite the input project")
+            result = commit_project_ai_build(input_path, request_path)
+            output_path.write_text(encode_project(result.project), encoding="utf-8")
+            print(json.dumps({
+                "ok": True,
+                "output": str(output_path),
+                "request_id": result.request_id,
+                "request_hash": result.request_hash,
+                "before_semantic_hash": result.before_semantic_hash,
+                "after_semantic_hash": result.after_semantic_hash,
+                "before_record_hash": result.before_record_hash,
+                "after_record_hash": result.after_record_hash,
+            }, ensure_ascii=False, sort_keys=True))
+            return 0
+
         if args.command == "interop":
             source = _load_npy(args.npy_file)
             if args.interop_command == "inspect":

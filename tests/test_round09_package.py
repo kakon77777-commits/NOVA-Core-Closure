@@ -8,8 +8,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def test_round09_version_and_schema_header_default():
-    assert nova_core.__version__ == "0.9.0"
-    assert SchemaHeader().nova_core_version == "0.9.0"
+    current = tuple(int(x) for x in nova_core.__version__.split("."))
+    assert current >= (0, 9, 0)
+    assert SchemaHeader().nova_core_version == nova_core.__version__
     assert SchemaHeader().schema_version == "0.1.0"
 
 

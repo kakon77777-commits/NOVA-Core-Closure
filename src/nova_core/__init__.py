@@ -1,6 +1,6 @@
 from .canonical import canonical_bytes, canonical_json, project_record, record_hash, semantic_hash
 from .codec import decode_project, encode_project
-from .errors import BackendError, ConflictError, DecodeError, DependencyError, DiffError, DLPackInteropError, DTypeInteropError, ErrorDetail, ExecutionError, FormulaEditError, InteropError, MigrationError, MissingInputError, NovaError, NotebookError, PatchError, ProjectionEditError, ProjectionError, RuntimeShapeError, ShapeError, TrainingError, UnsupportedOperationError, ValidationError, ResourcePlanningError, ResourceVerificationError
+from .errors import BackendError, ConflictError, DecodeError, DependencyError, DiffError, DLPackInteropError, DTypeInteropError, ErrorDetail, ExecutionError, FormulaEditError, InteropError, MigrationError, MissingInputError, NovaError, NotebookError, PatchError, ProjectionEditError, ProjectionError, RuntimeShapeError, ShapeError, TrainingError, UnsupportedOperationError, ValidationError, ResourcePlanningError, ResourceVerificationError, AIBuildError, AISandboxError, AIBuildConflictError
 from .model import Edge, Graph, Module, Node, Project, SchemaHeader, validate_graph, validate_module, validate_project
 from .patch import GraphPatch, GraphTransaction, PatchResult, apply_graph_patch
 from .shape import DimExpr, ProofStatus, Shape, ShapeConstraint, ShapeObligation, ShapeSolver, as_dim
@@ -16,16 +16,17 @@ from .editing import ProjectionEditCandidate, build_projection_edit_candidate, c
 from .interactive import AddEdgeEdit, AddNodeEdit, NodeGraphEdit, RemoveEdgeEdit, RemoveNodeEdit, ReplaceNodeEdit, SetGraphOutputsEdit, SetNodeAttributesEdit, SetNodeInputsEdit, apply_node_graph_edits, decode_node_graph_edits, preview_node_graph_edit
 from .formula_editing import ParsedLocalFormula, parse_local_formula, preview_formula_edit
 from .notebook import CellOutput, ExternalInput, Notebook, NotebookBinding, NotebookCell, NotebookCellResult, NotebookResult, decode_notebook, notebook_hash, notebook_record, run_notebook
-from .audit import project_audit_view, project_error_view
-from .api import GradientExecutionResult, differentiate_project, diff_project_graphs, find_graph, interop_from_dlpack, interop_to_dlpack, interop_to_numpy, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_structured_edit, run_gradient, run_graph, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan
+from .audit import project_audit_view, project_error_view, project_ai_build_audit
+from .api import GradientExecutionResult, audit_project_ai_build, commit_project_ai_build, load_ai_build_request, preview_project_ai_build, differentiate_project, diff_project_graphs, find_graph, interop_from_dlpack, interop_to_dlpack, interop_to_numpy, load_project, preview_formula_edit_project, preview_node_graph_edit_project, preview_structured_edit, run_gradient, run_graph, run_project, run_project_gradient, run_project_notebook, train_project, plan_project_memory, verify_project_memory_plan, select_project_memory_plan
 from .autodiff import DerivativeGraphResult, DifferentiationRequest, VJP_RULES, derivative_graph_id, differentiate_graph, gradient_symbol
 from .gradcheck import GradientCheckResult, check_gradient, finite_difference_gradient
 from .training import TrainingConfig, TrainingResult, TrainingState, TrainingStepRecord, parameter_bindings, parameter_state_hash, sgd_update, train_graph
 from .interop import dlpack_device, from_dlpack, from_numpy, numpy_dtype, to_dlpack, to_numpy, to_python
 from .resources import OwnershipState, ResourceObligation, ValueLifetime, ResourceAnalysis, BufferBinding, DeviceTransfer, MemoryPlan, analyze_resources, dtype_nbytes, tensor_nbytes, plan_memory, conservative_memory_plan, memory_plan_hash, encode_memory_plan, decode_memory_plan, decode_symbol_types
 from .resource_verifier import VerificationStatus, PlanViolation, MemoryPlanVerification, PlanSelection, verify_memory_plan, select_memory_plan
+from .ai_build import AIProvenance, AISandboxPolicy, AIBuildRequest, BuildConstraint, BuildTestCase, BuildStatus, SandboxViolation, SandboxReport, ConstraintCheckResult, BuildTestResult, DifferentiationEvidence, AIBuildCandidate, AIBuildCommitResult, AIBuildTransaction, ai_build_request_hash, encode_ai_build_request, decode_ai_build_request, check_ai_sandbox, evaluate_build_constraints, preview_ai_build
 
-__version__ = "0.9.0"
+__version__ = "0.10.0"
 
 __all__ = [
     "__version__",
@@ -41,13 +42,14 @@ __all__ = [
     "NodeGraphEdit", "AddNodeEdit", "ReplaceNodeEdit", "RemoveNodeEdit", "SetNodeInputsEdit", "SetNodeAttributesEdit", "AddEdgeEdit", "RemoveEdgeEdit", "SetGraphOutputsEdit", "apply_node_graph_edits", "decode_node_graph_edits", "preview_node_graph_edit",
     "ParsedLocalFormula", "parse_local_formula", "preview_formula_edit",
     "ExternalInput", "CellOutput", "NotebookBinding", "NotebookCell", "Notebook", "NotebookCellResult", "NotebookResult", "notebook_record", "notebook_hash", "decode_notebook", "run_notebook",
-    "ExecutionEnvironment", "ExecutionResult", "ExecutionTrace", "TraceRecord", "validate_runtime_value", "Interpreter", "NumPyBackend", "ProjectionSnapshot", "project_text", "project_formula", "project_graph_view", "project_editable_text", "parse_editable_text", "project_snapshot", "load_project", "run_graph", "run_project", "find_graph", "GradientExecutionResult", "differentiate_project", "run_gradient", "run_project_gradient", "train_project", "interop_to_numpy", "interop_to_dlpack", "interop_from_dlpack", "preview_node_graph_edit_project", "preview_formula_edit_project", "run_project_notebook", "plan_project_memory", "verify_project_memory_plan", "select_project_memory_plan",
+    "ExecutionEnvironment", "ExecutionResult", "ExecutionTrace", "TraceRecord", "validate_runtime_value", "Interpreter", "NumPyBackend", "ProjectionSnapshot", "project_text", "project_formula", "project_graph_view", "project_editable_text", "parse_editable_text", "project_snapshot", "load_project", "load_ai_build_request", "preview_project_ai_build", "audit_project_ai_build", "commit_project_ai_build", "run_graph", "run_project", "find_graph", "GradientExecutionResult", "differentiate_project", "run_gradient", "run_project_gradient", "train_project", "interop_to_numpy", "interop_to_dlpack", "interop_from_dlpack", "preview_node_graph_edit_project", "preview_formula_edit_project", "run_project_notebook", "plan_project_memory", "verify_project_memory_plan", "select_project_memory_plan",
     "ErrorDetail", "NovaError", "ValidationError", "ShapeError", "ConflictError", "PatchError", "DecodeError", "MigrationError", "DiffError",
-    "ExecutionError", "MissingInputError", "RuntimeShapeError", "UnsupportedOperationError", "DependencyError", "BackendError", "ResourcePlanningError", "ResourceVerificationError", "ProjectionError", "ProjectionEditError", "FormulaEditError", "NotebookError", "TrainingError", "InteropError", "DTypeInteropError", "DLPackInteropError",
+    "ExecutionError", "MissingInputError", "RuntimeShapeError", "UnsupportedOperationError", "DependencyError", "BackendError", "ResourcePlanningError", "ResourceVerificationError", "AIBuildError", "AISandboxError", "AIBuildConflictError", "ProjectionError", "ProjectionEditError", "FormulaEditError", "NotebookError", "TrainingError", "InteropError", "DTypeInteropError", "DLPackInteropError",
     "DerivativeGraphResult", "DifferentiationRequest", "VJP_RULES", "derivative_graph_id", "differentiate_graph", "gradient_symbol",
     "GradientCheckResult", "check_gradient", "finite_difference_gradient",
     "TrainingConfig", "TrainingState", "TrainingStepRecord", "TrainingResult", "parameter_bindings", "parameter_state_hash", "sgd_update", "train_graph",
     "numpy_dtype", "to_numpy", "from_numpy", "to_python", "to_dlpack", "from_dlpack", "dlpack_device",
     "OwnershipState", "ResourceObligation", "ValueLifetime", "ResourceAnalysis", "BufferBinding", "DeviceTransfer", "MemoryPlan", "analyze_resources", "dtype_nbytes", "tensor_nbytes", "plan_memory", "conservative_memory_plan", "memory_plan_hash", "encode_memory_plan", "decode_memory_plan", "decode_symbol_types",
     "VerificationStatus", "PlanViolation", "MemoryPlanVerification", "PlanSelection", "verify_memory_plan", "select_memory_plan",
+    "AIProvenance", "AISandboxPolicy", "AIBuildRequest", "BuildConstraint", "BuildTestCase", "BuildStatus", "SandboxViolation", "SandboxReport", "ConstraintCheckResult", "BuildTestResult", "DifferentiationEvidence", "AIBuildCandidate", "AIBuildCommitResult", "AIBuildTransaction", "ai_build_request_hash", "encode_ai_build_request", "decode_ai_build_request", "check_ai_sandbox", "evaluate_build_constraints", "preview_ai_build", "project_ai_build_audit",
 ]
