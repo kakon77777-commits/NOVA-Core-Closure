@@ -1,0 +1,27 @@
+{
+  "encoding": "UTF-8",
+  "canonical_math_delimiters": [
+    "$...$",
+    "$$...$$"
+  ],
+  "generated_documents": [
+    {
+      "file": "NOVA_CANONICAL_ARCHITECTURE_MAP_v0.1.md",
+      "valid": true,
+      "issues": []
+    },
+    {
+      "file": "NOVA_CORE_CLOSURE_0.1_MILESTONE.md",
+      "valid": true,
+      "issues": []
+    }
+  ],
+  "sources_copied_verbatim": [
+    "Nova_Core_Baseline_v3.0_統合前正式核心規格.md",
+    "Nova_Unified_Roadmap_v1.0_新版計畫書與統合架構.md",
+    "ISWP_05_結構先於文字_Nova與後文本程式語言本體論_v0.1.md",
+    "EML-APL算子橋接與Nova前置中介層技術白皮書_v0.1.md",
+    "動態顯影作為語言調控示範_EML-U_NOVA_SNTME垂直統合規格_v0.1.md"
+  ],
+  "valid": true
+}
