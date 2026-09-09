@@ -5,6 +5,7 @@ from typing import Any
 
 import numpy as np
 
+from ..ad_runtime import broadcast_like, mean_grad, reduce_to_shape, relu_grad, reshape_like, transpose_last2, zero_like
 from ..errors import MissingInputError, UnsupportedOperationError
 from ..interpreter import Interpreter, _single_output, _softmax
 from ..model import Graph, Node
@@ -80,6 +81,38 @@ class NumPyBackend(Interpreter):
             return _single_output(node, np.tanh(args[0]))
         if kind == "Softmax":
             return _single_output(node, _softmax(args[0], int(node.attributes.get("axis", -1))))
+        if kind == "StopGradient":
+            return _single_output(node, args[0])
+        if kind == "ADReduceToShape":
+            return _single_output(node, reduce_to_shape(args[0], args[1]))
+        if kind == "ADBroadcastLike":
+            return _single_output(
+                node,
+                broadcast_like(
+                    args[0],
+                    args[1],
+                    axis=node.attributes.get("axis"),
+                    keepdims=bool(node.attributes.get("keepdims", False)),
+                ),
+            )
+        if kind == "ADReshapeLike":
+            return _single_output(node, reshape_like(args[0], args[1]))
+        if kind == "ADTransposeLast2":
+            return _single_output(node, transpose_last2(args[0]))
+        if kind == "ADMeanGrad":
+            return _single_output(
+                node,
+                mean_grad(
+                    args[0],
+                    args[1],
+                    axis=node.attributes.get("axis"),
+                    keepdims=bool(node.attributes.get("keepdims", False)),
+                ),
+            )
+        if kind == "ADReluGrad":
+            return _single_output(node, relu_grad(args[0], args[1]))
+        if kind == "ADZeroLike":
+            return _single_output(node, zero_like(args[0]))
         if kind == "If":
             if len(args) != 3:
                 raise UnsupportedOperationError("If requires condition, then, else inputs", source_nodes=(node.id,))

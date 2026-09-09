@@ -69,6 +69,14 @@ def _op_name(kind: str) -> str:
         "If": "if",
         "BoundedLoop": "bounded_loop",
         "Call": "call",
+        "StopGradient": "stop_gradient",
+        "ADReduceToShape": "ad_reduce_to_shape",
+        "ADBroadcastLike": "ad_broadcast_like",
+        "ADReshapeLike": "ad_reshape_like",
+        "ADTransposeLast2": "ad_transpose_last2",
+        "ADMeanGrad": "ad_mean_grad",
+        "ADReluGrad": "ad_relu_grad",
+        "ADZeroLike": "ad_zero_like",
         "Constant": "constant",
         "Parameter": "parameter",
         "Input": "input",
@@ -96,6 +104,8 @@ def project_text(graph: Graph) -> str:
             call = f"{op}({args}; axis={node.attributes.get('axis', -1)})"
         elif node.kind == "BoundedLoop":
             call = f"bounded_loop({args}; trip_count={node.attributes.get('trip_count')}; body={node.attributes.get('body_kind')})"
+        elif node.kind in {"ADBroadcastLike", "ADMeanGrad"}:
+            call = f"{op}({args}; axis={node.attributes.get('axis')}; keepdims={bool(node.attributes.get('keepdims', False))})"
         else:
             call = f"{op}({args})"
         type_suffix = _type_text(node.value_type)
@@ -107,6 +117,17 @@ def project_text(graph: Graph) -> str:
         lines.append("return " + ", ".join(graph.outputs))
     return "\n".join(lines)
 
+
+
+def _formula_operand(expression: str) -> str:
+    stripped = expression.strip()
+    if stripped.replace("_", "").replace(":", "").isalnum():
+        return stripped
+    try:
+        float(stripped)
+        return stripped
+    except ValueError:
+        return f"({stripped})"
 
 def project_formula(graph: Graph) -> str:
     expr: dict[str, str] = {name: name for name in graph.inputs}
@@ -123,15 +144,15 @@ def project_formula(graph: Graph) -> str:
         elif kind == "Add":
             value = f"{args[0]} + {args[1]}"
         elif kind == "Subtract":
-            value = f"{args[0]} - {args[1]}"
+            value = f"{_formula_operand(args[0])} - {_formula_operand(args[1])}"
         elif kind == "Multiply":
-            value = f"{args[0]} \\odot {args[1]}"
+            value = f"{_formula_operand(args[0])} \\odot {_formula_operand(args[1])}"
         elif kind == "Divide":
-            value = f"{args[0]} / {args[1]}"
+            value = f"{_formula_operand(args[0])} / {_formula_operand(args[1])}"
         elif kind == "Negate":
-            value = f"-{args[0]}"
+            value = f"-{_formula_operand(args[0])}"
         elif kind == "MatMul":
-            value = f"({args[0]} \\cdot {args[1]})"
+            value = f"({_formula_operand(args[0])} \\cdot {_formula_operand(args[1])})"
         elif kind == "Relu":
             value = f"\\operatorname{{ReLU}}({args[0]})"
         elif kind == "Sigmoid":
@@ -140,13 +161,37 @@ def project_formula(graph: Graph) -> str:
             value = f"\\tanh({args[0]})"
         elif kind == "Softmax":
             value = f"\\operatorname{{softmax}}({args[0]})"
+        elif kind == "ReduceSum":
+            value = f"\\operatorname{{sum}}_{{{node.attributes.get('axis')}}}({args[0]})"
+        elif kind == "Mean":
+            value = f"\\operatorname{{mean}}_{{{node.attributes.get('axis')}}}({args[0]})"
+        elif kind == "Reshape":
+            value = f"\\operatorname{{reshape}}({args[0]})"
+        elif kind == "Transpose":
+            value = f"\\operatorname{{transpose}}({args[0]})"
+        elif kind == "StopGradient":
+            value = f"\\operatorname{{stopgrad}}({args[0]})"
+        elif kind == "ADReduceToShape":
+            value = f"\\operatorname{{reduceToShape}}({args[0]}, {args[1]})"
+        elif kind == "ADBroadcastLike":
+            value = f"\\operatorname{{broadcastLike}}({args[0]}, {args[1]})"
+        elif kind == "ADReshapeLike":
+            value = f"\\operatorname{{reshapeLike}}({args[0]}, {args[1]})"
+        elif kind == "ADTransposeLast2":
+            value = f"\\operatorname{{transposeLast2}}({args[0]})"
+        elif kind == "ADMeanGrad":
+            value = f"\\operatorname{{meanGrad}}({args[0]}, {args[1]})"
+        elif kind == "ADReluGrad":
+            value = f"\\operatorname{{reluGrad}}({args[0]}, {args[1]})"
+        elif kind == "ADZeroLike":
+            value = f"\\operatorname{{zeroLike}}({args[0]})"
         elif kind == "Constant":
             value = str(node.attributes.get("value"))
         elif kind == "Parameter":
             value = str(node.attributes.get("name", node.outputs[0]))
         else:
             raise ProjectionError(
-                "node kind is outside the Round 03 formula projection subset",
+                "node kind is outside the current formula projection subset",
                 source_nodes=(node.id,),
                 context={"kind": kind},
             )

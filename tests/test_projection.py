@@ -59,3 +59,16 @@ def test_text_projection_includes_tensor_type_without_becoming_authoritative_sou
     text = project_text(graph)
     assert "Tensor[f32; B,3]" in text
     assert "y = identity(x)" in text
+
+
+def test_formula_projection_parenthesizes_composite_multiply_operands():
+    graph = Graph(
+        id="formula_precedence",
+        inputs=("x", "y"),
+        outputs=("sq",),
+        nodes=(
+            Node(id="sub", kind="Subtract", inputs=("x", "y"), outputs=("d",)),
+            Node(id="mul", kind="Multiply", inputs=("d", "d"), outputs=("sq",)),
+        ),
+    )
+    assert project_formula(graph) == "sq = (x - y) \\odot (x - y)"

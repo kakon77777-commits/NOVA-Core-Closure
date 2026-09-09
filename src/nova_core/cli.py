@@ -8,9 +8,11 @@ from typing import Any
 
 import numpy as np
 
-from .api import find_graph, load_project, run_project
+from .api import find_graph, load_project, run_project, run_project_gradient
+from .autodiff import DifferentiationRequest, gradient_symbol
 from .canonical import semantic_hash
 from .errors import NovaError
+from .gradcheck import check_gradient
 from .projection import project_formula, project_text
 
 
@@ -55,6 +57,18 @@ def _parser() -> argparse.ArgumentParser:
     project.add_argument("--module", default="app")
     project.add_argument("--graph", default="main")
     project.add_argument("--view", choices=("text", "formula"), required=True)
+
+    grad = sub.add_parser("grad")
+    grad.add_argument("program")
+    grad.add_argument("--module", default="app")
+    grad.add_argument("--graph", default="main")
+    grad.add_argument("--target", required=True)
+    grad.add_argument("--wrt", action="append", required=True)
+    grad.add_argument("--seed-input")
+    grad.add_argument("--inputs", required=True)
+    grad.add_argument("--parameters")
+    grad.add_argument("--backend", choices=("interpreter", "numpy"), default="numpy")
+    grad.add_argument("--check", action="store_true")
     return parser
 
 
@@ -101,6 +115,58 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "project":
             graph = find_graph(project, args.module, args.graph)
             print(project_text(graph) if args.view == "text" else project_formula(graph))
+            return 0
+        if args.command == "grad":
+            raw_inputs = json.loads(Path(args.inputs).read_text(encoding="utf-8"))
+            raw_parameters = {}
+            if args.parameters:
+                raw_parameters = json.loads(Path(args.parameters).read_text(encoding="utf-8"))
+            inputs = {str(k): _runtime_value(v) for k, v in raw_inputs.items()}
+            parameters = {str(k): _runtime_value(v) for k, v in raw_parameters.items()}
+            request = DifferentiationRequest(
+                target=args.target,
+                wrt=tuple(args.wrt),
+                seed_input=args.seed_input,
+            )
+            run = run_project_gradient(
+                project,
+                args.module,
+                args.graph,
+                inputs,
+                request,
+                parameters=parameters,
+                backend=args.backend,
+            )
+            primal = find_graph(project, args.module, args.graph)
+            check_payload = None
+            if args.check:
+                checked = check_gradient(
+                    primal,
+                    inputs,
+                    request,
+                    parameters=parameters,
+                )
+                check_payload = {
+                    "passed": checked.passed,
+                    "max_abs_error": dict(checked.max_abs_error),
+                    "max_rel_error": dict(checked.max_rel_error),
+                    "epsilon": checked.epsilon,
+                    "rtol": checked.rtol,
+                    "atol": checked.atol,
+                }
+            payload = {
+                "ok": True,
+                "target": request.target,
+                "derivative_graph_id": run.derivative.graph.id,
+                "primal_semantic_hash": semantic_hash(primal),
+                "derivative_semantic_hash": semantic_hash(run.derivative.graph),
+                "gradients": {
+                    symbol: _jsonable(run.execution.outputs[gradient_symbol(symbol)])
+                    for symbol in request.wrt
+                },
+                "check": check_payload,
+            }
+            print(json.dumps(payload, ensure_ascii=False, sort_keys=True))
             return 0
         return 2
     except NovaError as exc:

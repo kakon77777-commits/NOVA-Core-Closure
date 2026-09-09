@@ -56,22 +56,54 @@ Repository bootstrap, recovered source basis, and Core Closure scope.
 
 ### Round 03 — Executable Closure
 
-**Implemented.** NOVA can now execute its canonical structure directly:
+**Implemented.** Reference interpreter, NumPy CPU backend, runtime shape guards, pure arithmetic/tensor operations, explicit bounded control flow, projections, Python API and CLI.
 
-- immutable runtime input/parameter environments;
-- runtime tensor shape validation;
-- typed execution errors;
-- deterministic dependency-driven interpreter;
-- pure arithmetic and tensor execution;
-- `MatMul`, reshape/transpose, reductions and activations;
-- explicit `If`, finite `BoundedLoop`, and pure graph `Call`;
-- NumPy CPU backend with differential tests against the interpreter;
-- structured-text projection;
-- mathematical formula projection for the supported subset;
-- Python `load/run/project` API;
-- CLI `check`, `run`, `hash`, and `project`.
+### Round 04 — Reverse-Mode Automatic Differentiation
 
-The executable identity invariant is:
+**Implemented.** NOVA now differentiates its own canonical graph as an explicit graph transformation:
+
+$$
+\boxed{
+G
+\xrightarrow{\mathcal D_{\mathrm{rev}}}
+G_{\nabla}
+}
+$$
+
+Round 04 includes:
+
+- deterministic `DifferentiationRequest` and derivative graph identity;
+- scalar `grad` and explicit-seed VJP construction;
+- explicit VJP rule registry;
+- fan-out gradient accumulation;
+- broadcast-aware cotangent reduction;
+- MatMul, reshape, transpose, reduce, mean, ReLU, sigmoid, tanh and softmax reverse rules;
+- explicit `StopGradient` barriers;
+- typed failure for unknown, non-differentiable and unsupported paths;
+- derivative graph execution through Interpreter and NumPy backend;
+- finite-difference gradient checking as an external validator;
+- derivative text/formula projections;
+- Python gradient API;
+- CLI `nova grad`.
+
+AI or external autograd systems do not define correctness. Finite differences verify the graph-level derivative transform but never replace it.
+
+### Round 05 — G1 Model Closure & Training Validation
+
+**Next.** Close the original G1 exit criteria with executable training examples for linear regression, MLP and small attention, plus DLPack/interop validation and model-level differential tests.
+
+## Quick start
+
+```text
+python -m pip install -e .
+nova check examples/differentiable_linear.json
+nova run examples/differentiable_linear.json --module app --graph main --inputs examples/differentiable_inputs.json --parameters examples/differentiable_parameters.json --backend numpy
+nova grad examples/differentiable_linear.json --module app --graph main --target loss --wrt W --wrt b --inputs examples/differentiable_inputs.json --parameters examples/differentiable_parameters.json --backend numpy --check
+```
+
+## Identity invariant
+
+Execution and differentiation do not mutate the primal graph:
 
 $$
 \boxed{
@@ -81,34 +113,7 @@ H_{\mathrm{sem}}(G_{\mathrm{after}})
 }
 $$
 
-Execution produces runtime state and traces; it does not rewrite the canonical program graph.
-
-The reference interpreter is the semantic anchor. NumPy is a backend implementation, not the definition of NOVA semantics.
-
-### Round 04 — Reverse-Mode Automatic Differentiation
-
-**Next.** Round 04 will add language-level reverse-mode AD as an explicit graph transformation, finite-difference gradient verification, stop-gradient boundaries, and typed non-differentiable failure.
-
-## Quick start
-
-```text
-python -m pip install -e .
-nova check examples/executable_linear.json
-nova run examples/executable_linear.json --module app --graph main --inputs examples/executable_inputs.json --backend numpy
-nova project examples/executable_linear.json --module app --graph main --view formula
-```
-
-Expected formula projection:
-
-$$
-Y = (X \cdot W) + b.
-$$
-
-Expected numeric result for the included example:
-
-```json
-{"Y": [[8.5]]}
-```
+A derivative graph is a new canonical program object with its own deterministic semantic hash.
 
 ## AI-native boundary
 
@@ -124,7 +129,7 @@ $$
 G^\ast.
 $$
 
-AI proposals remain untrusted until the canonical validators, runtime guards, tests, and later proof obligations accept them.
+AI proposals remain untrusted until canonical validators, runtime guards, tests, and later proof obligations accept them.
 
 ## Round artifact rule
 

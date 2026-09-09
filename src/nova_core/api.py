@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from .autodiff import DerivativeGraphResult, DifferentiationRequest, differentiate_graph
 from .backends import NumPyBackend
 from .codec import decode_project
 from .errors import ValidationError
@@ -11,6 +13,12 @@ from .interpreter import Interpreter
 from .model import Graph, Project
 from .runtime import ExecutionResult
 
+
+
+@dataclass(frozen=True)
+class GradientExecutionResult:
+    derivative: DerivativeGraphResult
+    execution: ExecutionResult
 
 def load_project(source: Project | str | bytes | Mapping[str, Any] | Path) -> Project:
     if isinstance(source, Project):
@@ -91,3 +99,53 @@ def run_project(
 def find_graph(project: Project, module_id: str, graph_id: str) -> Graph:
     graph, _ = _find_graph(project, module_id, graph_id)
     return graph
+
+def differentiate_project(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+    request: DifferentiationRequest,
+) -> DerivativeGraphResult:
+    loaded = load_project(project)
+    graph, _ = _find_graph(loaded, module_id, graph_id)
+    return differentiate_graph(graph, request)
+
+
+def run_gradient(
+    graph: Graph,
+    inputs: Mapping[str, Any],
+    request: DifferentiationRequest,
+    *,
+    parameters: Mapping[str, Any] | None = None,
+    backend: str = "interpreter",
+) -> GradientExecutionResult:
+    derivative = differentiate_graph(graph, request)
+    execution = run_graph(
+        derivative.graph,
+        inputs,
+        parameters=parameters,
+        backend=backend,
+    )
+    return GradientExecutionResult(derivative=derivative, execution=execution)
+
+
+def run_project_gradient(
+    project: Project | str | bytes | Mapping[str, Any] | Path,
+    module_id: str,
+    graph_id: str,
+    inputs: Mapping[str, Any],
+    request: DifferentiationRequest,
+    *,
+    parameters: Mapping[str, Any] | None = None,
+    backend: str = "interpreter",
+) -> GradientExecutionResult:
+    loaded = load_project(project)
+    graph, _ = _find_graph(loaded, module_id, graph_id)
+    return run_gradient(
+        graph,
+        inputs,
+        request,
+        parameters=parameters,
+        backend=backend,
+    )
+

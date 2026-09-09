@@ -7,20 +7,20 @@ from nova_core import decode_project, run_project, semantic_hash
 ROOT = Path(__file__).resolve().parents[1]
 
 
-def test_round03_package_version():
-    assert nova_core.__version__ == "0.3.0"
+def test_round04_package_version():
+    assert nova_core.__version__ == "0.4.0"
 
 
-def test_readme_marks_round03_implemented_and_round04_next():
+def test_readme_marks_round04_implemented_and_round05_next():
     text = (ROOT / "README.md").read_text(encoding="utf-8")
-    assert "Round 03 — Executable Closure" in text
-    assert "**Implemented.**" in text
     assert "Round 04 — Reverse-Mode Automatic Differentiation" in text
+    assert "**Implemented.**" in text
+    assert "Round 05" in text
 
 
 def test_pyproject_version_dependency_and_cli_entrypoint():
     text = (ROOT / "pyproject.toml").read_text(encoding="utf-8")
-    assert 'version = "0.3.0"' in text
+    assert 'version = "0.4.0"' in text
     assert 'numpy>=' in text
     assert 'nova = "nova_core.cli:main"' in text
 
@@ -33,6 +33,31 @@ def test_executable_linear_example_runs():
     assert semantic_hash(project).startswith("sha256:")
 
 
-def test_default_schema_header_tracks_round03_core_version_without_schema_break():
-    assert nova_core.SchemaHeader().nova_core_version == "0.3.0"
+def test_default_schema_header_tracks_round04_core_version_without_schema_break():
+    assert nova_core.SchemaHeader().nova_core_version == "0.4.0"
     assert nova_core.SchemaHeader().schema_version == "0.1.0"
+
+
+def test_differentiable_linear_example_and_parameter_files_exist():
+    assert (ROOT / "examples" / "differentiable_linear.json").exists()
+    assert (ROOT / "examples" / "differentiable_inputs.json").exists()
+    assert (ROOT / "examples" / "differentiable_parameters.json").exists()
+
+
+def test_differentiable_linear_example_runs_gradient_and_finite_difference_check():
+    import numpy as np
+    from nova_core import DifferentiationRequest, check_gradient, find_graph, gradient_symbol, run_project, run_project_gradient
+
+    project = decode_project((ROOT / "examples" / "differentiable_linear.json").read_text(encoding="utf-8"))
+    inputs = json.loads((ROOT / "examples" / "differentiable_inputs.json").read_text(encoding="utf-8"))
+    parameters = json.loads((ROOT / "examples" / "differentiable_parameters.json").read_text(encoding="utf-8"))
+    primal = run_project(project, "app", "main", inputs, parameters=parameters, backend="numpy")
+    np.testing.assert_allclose(primal.outputs["loss"], 1.125)
+
+    request = DifferentiationRequest(target="loss", wrt=("W", "b"))
+    gradient_run = run_project_gradient(project, "app", "main", inputs, request, parameters=parameters, backend="numpy")
+    np.testing.assert_allclose(gradient_run.execution.outputs[gradient_symbol("W")], np.array([[1.5], [3.0]]))
+    np.testing.assert_allclose(gradient_run.execution.outputs[gradient_symbol("b")], np.array([1.5]))
+
+    checked = check_gradient(find_graph(project, "app", "main"), inputs, request, parameters=parameters)
+    assert checked.passed

@@ -1,0 +1,41 @@
+{
+  "header": {
+    "nova_core_version": "0.4.0",
+    "schema_version": "0.1.0",
+    "feature_flags": ["graph-kernel", "tensor-shape-kernel", "executable-closure", "reverse-mode-ad"]
+  },
+  "modules": [
+    {
+      "id": "app",
+      "graphs": [
+        {
+          "id": "main",
+          "inputs": ["X", "T"],
+          "outputs": ["loss"],
+          "nodes": [
+            {"id": "w", "kind": "Parameter", "outputs": ["W"], "attributes": {"name": "W"}},
+            {"id": "b", "kind": "Parameter", "outputs": ["b"], "attributes": {"name": "b"}},
+            {"id": "mm", "kind": "MatMul", "inputs": ["X", "W"], "outputs": ["XW"]},
+            {"id": "bias", "kind": "Add", "inputs": ["XW", "b"], "outputs": ["Y"]},
+            {"id": "error", "kind": "Subtract", "inputs": ["Y", "T"], "outputs": ["E"]},
+            {"id": "square", "kind": "Multiply", "inputs": ["E", "E"], "outputs": ["E2"]},
+            {
+              "id": "loss",
+              "kind": "Mean",
+              "inputs": ["E2"],
+              "outputs": ["loss"],
+              "attributes": {"axis": null},
+              "value_type": {
+                "kind": "tensor_type",
+                "dtype": "f64",
+                "shape": {"kind": "shape", "dims": []},
+                "layout": "dense",
+                "device": "cpu"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

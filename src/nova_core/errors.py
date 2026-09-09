@@ -104,3 +104,7 @@ class BackendError(ExecutionError):
 
 class ProjectionError(NovaError):
     category = "ProjectionError"
+
+
+class DiffError(NovaError):
+    category = "DiffError"
