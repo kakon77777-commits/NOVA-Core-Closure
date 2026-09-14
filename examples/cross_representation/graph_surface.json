@@ -1,0 +1,23 @@
+{
+  "format": "nova.graph-surface/0.8",
+  "module": "graph_world",
+  "graph": {
+    "name": "native_graph",
+    "inputs": ["x", "y"],
+    "outputs": ["sum"],
+    "nodes": [
+      {
+        "key": "g_add",
+        "op": "Add",
+        "args": ["x", "y"],
+        "bind": ["sum"],
+        "tensor": {
+          "dtype": "f32",
+          "shape": [{"symbol": "B"}, 8],
+          "layout": "dense",
+          "device": "cpu"
+        }
+      }
+    ]
+  }
+}
