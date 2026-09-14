@@ -1,0 +1,4 @@
+# Text-like human surface. This is not the canonical program object.
+graph calculation(left, right) -> (answer)
+temporary = Add(right, left) :: f32[Batch,8]
+answer = Identity(temporary)
