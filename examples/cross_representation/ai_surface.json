@@ -1,0 +1,30 @@
+{
+  "format": "nova.ai-plan/0.8",
+  "module": "ai_constructed_module",
+  "graph": "machine_plan",
+  "inputs": [
+    {"slot": 0, "label": "lhs"},
+    {"slot": 1, "label": "rhs"}
+  ],
+  "steps": [
+    {
+      "step": "reasoning_step_7",
+      "operator": "Add",
+      "args": [{"input": 1}, {"input": 0}],
+      "bind": "work",
+      "tensor": {
+        "dtype": "f32",
+        "dims": [{"binder": "Rows"}, 8],
+        "layout": "dense",
+        "device": "cpu"
+      }
+    },
+    {
+      "step": "presentation_alias",
+      "operator": "Identity",
+      "args": [{"value": "work"}],
+      "bind": "final"
+    }
+  ],
+  "outputs": [{"value": "final"}]
+}
