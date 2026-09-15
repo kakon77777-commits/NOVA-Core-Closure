@@ -1,0 +1,27 @@
+{
+  "core_norm_state": "sha256:2a02aae792b64e699caef73dd49efe10933e6642ec9bffbd695dd74605c4546e",
+  "fresh_verification_cases": 233,
+  "merged_pec_hash": "sha256:9f453f037b27d4bcaf796c6e35d46262517923e6bc7537272a9fd36fcd973c30",
+  "policy_algebra": {
+    "associative": true,
+    "identity": true,
+    "partial_algebra": true,
+    "permutation_invariant": true
+  },
+  "policy_algebra_hash": "sha256:c07d72cbfa89eb3da804ed02735a8ed40fb1591939d38d613b35706889bbf8d5",
+  "policy_bundle_hash": "sha256:4e1ccd9f569590cec27f39730e02bfb4c3a20971a29add928d0c389dd4539718",
+  "proof_hashes": [
+    "sha256:f038e97c16c79e755ece306f8e970d4ff31a10ef2cd8993bb0bef0f2ed2602b1",
+    "sha256:c642fb8d93b26ef46ee247a439d82bed29d5203457733045f5fe52a16199a5c4",
+    "sha256:428fc942a0949136f007228664bece21847ba8d412e2637305d9eb8b6ebaf191"
+  ],
+  "raw_conflicts": 3,
+  "raw_plan_hash": "sha256:3c2275d8971cfe7cf1aec4056fa847dbde654856167070ba6de750b715674dc6",
+  "resolution_hash": "sha256:484704cc0f9d2a370d1440f638a1847ff7a4e894a9d57c9c1762c28e0e0b6e19",
+  "resolved_normal_form_hash": "sha256:2791704e8c18e3208bd114877b153110d8121d125b87a07a62e9391bd9ec4359",
+  "resolved_repec_hash": "sha256:8d921e3e754f88d25f383dd67e2d1b816926451a768fc0fdd3b7f82b6f432cc6",
+  "status": "CONFLICT_RESOLUTION_VALID",
+  "supported_conflict_categories": ["debt", "frontier", "reopen"],
+  "terminal_claim": false,
+  "universal_policy_soundness_claim": false
+}
