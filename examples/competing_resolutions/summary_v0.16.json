@@ -1,0 +1,23 @@
+{
+  "auto_reunify_decision_hash": "sha256:08606a3e310987dc7cc98502e044166d81f185678f0068f0833cb65aa15a56fe",
+  "comparison_hash": "sha256:e697287a1614558f4961a42e4e8a993af874ba7805274aba3c16e18b9abbfd1f",
+  "comparison_verdict": "GOVERNANCE_REQUIRED",
+  "equivalent_comparison_hash": "sha256:37f68a74bdeb03b5c683402fef624826ce8ffa9520558f68c80db3e272c7d1e3",
+  "equivalent_knowledge_hash": "sha256:01f59284ee1a3b2dae69cffd5ef6b1013e2ab4316baa812bbce94e88c8c171a8",
+  "equivalent_universe_1_hash": "sha256:4a77f8a0298fb56814fb8534628b6b81dfdeeb8bbc782f6e4631d0abd5d16224",
+  "equivalent_universe_2_hash": "sha256:14674d4b9a098d1791a07fdcd0f978bc176d4190ba0325a5d5985f51b8c87658",
+  "fresh_verification_cases_per_competing_universe": 264,
+  "knowledge_difference_count": 3,
+  "preserve_plurality_decision_hash": "sha256:c2fe6c045c05526c7a875ee497ef428df3afaf0e5de1ec00b2c27ef1695f78d6",
+  "raw_rejected_plan_hash": "sha256:3c2275d8971cfe7cf1aec4056fa847dbde654856167070ba6de750b715674dc6",
+  "reexperiment_decision_hash": "sha256:3911a82d04fdae01683ea7a08b61e36ef5376d8c60e2b7de5390b23b08be3c43",
+  "select_B_decision_hash": "sha256:b516cf9d1410e56a13d6fd5fcf282a6d9056fa3359bae6a842c4eb1602b99a73",
+  "shared_core_norm_state": "sha256:2a02aae792b64e699caef73dd49efe10933e6642ec9bffbd695dd74605c4546e",
+  "status": "COMPETING_RESOLUTION_UNIVERSES_VALID",
+  "terminal_claim": false,
+  "truth_claim": false,
+  "universe_A_hash": "sha256:5d2481069a6492b6466113bd12e9029437b456f7550b7e87d0234eeeeb4dec34",
+  "universe_A_knowledge_hash": "sha256:01f59284ee1a3b2dae69cffd5ef6b1013e2ab4316baa812bbce94e88c8c171a8",
+  "universe_B_hash": "sha256:c08ead93885a46b8c53a8adf2f0d34d376845cfe5b460699a836c5bd3760c140",
+  "universe_B_knowledge_hash": "sha256:c616cff5e66823adca0acb8c68a0c2ffe28e80be1afbd4b6a287b974e0fe9b24"
+}
