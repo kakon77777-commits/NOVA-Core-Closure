@@ -1,0 +1,31 @@
+{
+  "base_pec_hash": "sha256:d6378ad86f5e5ba40536e9ab4383517f905a58a70fb360c7deb276d1690eede4",
+  "comparison_hash": "sha256:b1374a8aea4d11001a52880b84f6599f5778af8f025805a4354ea43574af1929",
+  "fresh_verification_cases": 169,
+  "knowledge_merge_hash": "sha256:9e602abb4bf82de1a6be5e57f99c554f74fd65560ba2fb5aa5f6b4734635e4be",
+  "left_tip_hash": "sha256:9729a97dbd23bb8da7be9f16a1ba7ff5ad75cf7dfa68c82f902253cfa2cfa2f9",
+  "lineage": {
+    "base_pec_hash": "sha256:d6378ad86f5e5ba40536e9ab4383517f905a58a70fb360c7deb276d1690eede4",
+    "edge_count": 14,
+    "episode_count": 1,
+    "graph_hash": "sha256:ebda42a91c885d3940eecb2e178640eedbeaa6573f7cac75e3ade9f149a3b912",
+    "merge_tips": [
+      "sha256:ac4bd06e9f5a80a7670b94af4e82bad0b406affc71396ee7481b614146c1b633"
+    ],
+    "node_count": 7,
+    "parent_lineage_graph_hash": "sha256:f805642d33761270725e084c827be2ee492de436c37f4c0ffb28b39dd35e3e85",
+    "status": "MULTI_PARENT_LINEAGE_VALID",
+    "terminal_claim": false,
+    "two_parent_episode": true
+  },
+  "merge_lineage_hash": "sha256:ebda42a91c885d3940eecb2e178640eedbeaa6573f7cac75e3ade9f149a3b912",
+  "merged_pec_hash": "sha256:ac4bd06e9f5a80a7670b94af4e82bad0b406affc71396ee7481b614146c1b633",
+  "merged_state_ref": "sha256:2a02aae792b64e699caef73dd49efe10933e6642ec9bffbd695dd74605c4546e",
+  "multi_parent_repec_hash": "sha256:e15f223fbb6e0ef0656d21db6d366bd3595cf067b23c6796f8364fdd073ac59a",
+  "premerge_verification_ceiling": 222,
+  "premerge_verification_floor": 112,
+  "right_tip_hash": "sha256:d12bd944f4b8db2b0abd606d2e55c0d7959271baf78dcbe50965087a49c3d7b0",
+  "status": "MULTI_PARENT_REPEC_CLOSED",
+  "terminal_claim": false,
+  "two_parent_episode": true
+}
