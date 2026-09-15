@@ -1,0 +1,57 @@
+{
+  "candidate_probe_count": 5,
+  "decision_node_count": 15,
+  "experimental_track_frozen": true,
+  "external_measurement_claim": false,
+  "freeze_certificate_hash": "sha256:c73d3c7c3acacd28dcab439d6cc56b410efcc5ffb07d404d6d6952d3deb61299",
+  "information_lower_bound": 3,
+  "language_ready_claim": false,
+  "next_track": "NOVA Practical Language Track",
+  "optimal_worst_case_depth": 3,
+  "optimality_hash": "sha256:a86d41f8a5ad19cb6700fe12a5d259d6db95d761444436c7fe90abadc207a0e4",
+  "partial1_survivors": 4,
+  "partial2_survivors": 2,
+  "plan_hash": "sha256:97b0989c060c839f9a1fab8f96feaedfa723015764309ba1e1dc36c7ea468bef",
+  "production_ready_claim": false,
+  "root_probe": {
+    "category": "debt",
+    "field_path": [
+      "status"
+    ],
+    "logical_key": "DEBT-FDT-COMPLETE-01",
+    "probe_hash": "sha256:667e8f852f54cc83b7d99d731426dfbe3c00af71cc7d60311d200ded182ab26c"
+  },
+  "selected_synthetic_universe": "adaptive-U101",
+  "selected_synthetic_universe_hash": "sha256:d0ecb9464668f0c58fa1071f85b79e329e98d324026bbb397aa9ac478472a525",
+  "status": "N_UNIVERSE_ADAPTIVE_EXPERIMENT_VALID",
+  "synthetic_assessment_hash": "sha256:28b771c4d2ea9f55d28568cd4fc6333c92c9fc5ada4643fe95163f2cc472243a",
+  "synthetic_assessment_verdict": "UNIQUE_MATCH",
+  "synthetic_evidence_hash": "sha256:e67200805699ac7be2d7a1cd8831646e47946c79faf8a8902b87abd49c32604c",
+  "synthetic_transcript_probe_count": 3,
+  "synthetic_validation_only": true,
+  "terminal_claim": false,
+  "universal_experiment_optimality_claim": false,
+  "universe_count": 8,
+  "universe_hashes": [
+    "sha256:a9e33c8f127855226c0eab0113f78fe9ad7ab49e1a9e51bee9048cfd176ab927",
+    "sha256:274b1a2308fda65f86b6d91c03bf0cb0501d3c7cddc5642d8255f59aeeb6c7a0",
+    "sha256:248a4c7dd8ea226a195175c472f04c5417cdbbd9c0003ab1412e15f0727a8f18",
+    "sha256:0b8a035bcb25866869a9b7f3dc167b540dcf3999d7b63bc4c9448f83f2597493",
+    "sha256:2bcdb9bbc2e29e0065f94c02e4b4e3bc82ef0c18aa3d2218eb1e91b4863e91e0",
+    "sha256:d0ecb9464668f0c58fa1071f85b79e329e98d324026bbb397aa9ac478472a525",
+    "sha256:dc10a54fd88039cd0ec1b9c85e42da22f7bd704037ad8bf3ec73daba8f4a41f8",
+    "sha256:e8339986af3dd119df49d8c2504809d3cbfef8bc16c4d2e89e3741e8d536de24"
+  ],
+  "universe_ids": [
+    "adaptive-U000",
+    "adaptive-U001",
+    "adaptive-U010",
+    "adaptive-U011",
+    "adaptive-U100",
+    "adaptive-U101",
+    "adaptive-U110",
+    "adaptive-U111"
+  ],
+  "unknown_root_survivors": 8,
+  "worst_case_depth": 3
+}
