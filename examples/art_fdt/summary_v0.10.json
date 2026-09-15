@@ -1,0 +1,42 @@
+{
+  "added_reopen_conditions": [
+    "REOPEN-FDT-FAMILY",
+    "REOPEN-PRIMITIVE",
+    "REOPEN-ROUTE",
+    "REOPEN-SEMANTIC",
+    "REOPEN-SUBSTRATE"
+  ],
+  "attack_probes": 13,
+  "baseline_pec_hash": "sha256:2090f2e6db301b62b47e9006462451578f7b0eaddfe77711fdbe83273b570468",
+  "controls": 3,
+  "hardened_pec_hash": "sha256:d6378ad86f5e5ba40536e9ab4383517f905a58a70fb360c7deb276d1690eede4",
+  "hardening_gaps": [
+    "missing explicit REOPEN-ROUTE condition in v0.9",
+    "missing explicit REOPEN-SEMANTIC condition in v0.9",
+    "no dedicated REOPEN-SUBSTRATE condition in v0.9",
+    "no dedicated primitive-reframing reopen condition in v0.9"
+  ],
+  "isolated_tests_passed": 98,
+  "reopen_gain_vector": [
+    0.125,
+    0.25,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.125,
+    0.25,
+    0.25,
+    0.375,
+    0.125,
+    0.25,
+    0.25
+  ],
+  "repec_hash": "sha256:0875d20efc7145f03697a5569a629f5d79d7ccc0b32a11e7ff1d07f090096f3d",
+  "repec_status": "REPEC_CLOSED",
+  "report_hash": "sha256:d27cdedc60121a20a24e57f0d293e2df65c093c158efb1b59b184cc31c915ef2",
+  "report_status": "ART_FDT_REOPENED",
+  "terminal_claim": false,
+  "test_family_completeness_claim": false,
+  "zip_sha256": "ae2db153707d15074cca1634b14ceb740ee6ca1dcbb3777f6344bcd95b902053"
+}
