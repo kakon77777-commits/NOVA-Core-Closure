@@ -1,0 +1,74 @@
+{
+  "branch_tips": [
+    "sha256:d6378ad86f5e5ba40536e9ab4383517f905a58a70fb360c7deb276d1690eede4"
+  ],
+  "edge_count": 30,
+  "edge_relations": {
+    "certifies_state": 2,
+    "contains_debt": 5,
+    "contains_frontier": 10,
+    "debt_evolves": 2,
+    "frontier_evolves": 4,
+    "introduces_debt": 1,
+    "introduces_frontier": 1,
+    "parent_of_repec": 1,
+    "produces_hardened_pec": 1,
+    "retires_frontier": 1,
+    "stressed_by": 1,
+    "supports_repec": 1
+  },
+  "episode_count": 1,
+  "episode_delta": {
+    "added_frontier": [
+      "FRONTIER-FDT-COMPLETE-01"
+    ],
+    "added_reopen_conditions": [
+      "REOPEN-FDT-FAMILY",
+      "REOPEN-PRIMITIVE",
+      "REOPEN-ROUTE",
+      "REOPEN-SEMANTIC",
+      "REOPEN-SUBSTRATE"
+    ],
+    "child_pec_hash": "sha256:d6378ad86f5e5ba40536e9ab4383517f905a58a70fb360c7deb276d1690eede4",
+    "debt_transitions": [
+      {
+        "after_status": "resolved",
+        "before_status": "deferred",
+        "debt_id": "DEBT-ART-01",
+        "transition": "deferred->resolved"
+      },
+      {
+        "after_status": "deferred",
+        "before_status": null,
+        "debt_id": "DEBT-FDT-COMPLETE-01",
+        "transition": "introduced"
+      },
+      {
+        "after_status": "deferred",
+        "before_status": "deferred",
+        "debt_id": "DEBT-UPSTREAM-01",
+        "transition": "unchanged"
+      }
+    ],
+    "parent_pec_hash": "sha256:2090f2e6db301b62b47e9006462451578f7b0eaddfe77711fdbe83273b570468",
+    "removed_frontier": [
+      "FRONTIER-ART-01"
+    ],
+    "state_changed": false,
+    "verification_cases_after": 98,
+    "verification_cases_before": 80
+  },
+  "graph_hash": "sha256:f805642d33761270725e084c827be2ee492de436c37f4c0ffb28b39dd35e3e85",
+  "node_count": 20,
+  "node_kinds": {
+    "art_fdt": 1,
+    "core_state": 1,
+    "debt_snapshot": 5,
+    "frontier_snapshot": 10,
+    "pec": 2,
+    "repec": 1
+  },
+  "root_pec_hash": "sha256:2090f2e6db301b62b47e9006462451578f7b0eaddfe77711fdbe83273b570468",
+  "status": "LINEAGE_VALID",
+  "terminal_claim": false
+}
