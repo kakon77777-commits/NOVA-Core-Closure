@@ -1,0 +1,20 @@
+{
+  "artifact_associativity_claim": false,
+  "base_pec_hash": "sha256:d6378ad86f5e5ba40536e9ab4383517f905a58a70fb360c7deb276d1690eede4",
+  "coherence_hash": "sha256:8a383333b277dfd36b3314ec78376966a40ea57d55e9b33dcff807cf2ef4fe97",
+  "core_norm_state": "sha256:2a02aae792b64e699caef73dd49efe10933e6642ec9bffbd695dd74605c4546e",
+  "fresh_verification_cases": 203,
+  "knowledge_associative": true,
+  "lineage_hash": "sha256:7880681d4eab316e9f681eff8f68d1e26bcadfee216443c4494da4838ef7abea",
+  "merged_pec_hash": "sha256:90ef4acfe900d42ea0ea91bffb32467e0d5015e8796215e5e7d9ea5445b0466b",
+  "n_parent_repec_hash": "sha256:e8706e5e91a86e58c823ca4424680a418cc666fb106c805bfd7a44f94a4d28d4",
+  "normal_form_hash": "sha256:cc809a9cc1164544d9269cf7e3bc3e8e8ae14de94c80e7d01c82c23d2b179d21",
+  "parent_count": 3,
+  "permutation_invariant": true,
+  "plan_hash": "sha256:1f2e83e4c4a57c4d1894d221e447669f41262f0831d7494c08da74a287c32959",
+  "status": "N_PARENT_COHERENCE_VALID",
+  "terminal_claim": false,
+  "verification_ceiling": 330,
+  "verification_floor": 112,
+  "verification_overlap_unknown": true
+}
